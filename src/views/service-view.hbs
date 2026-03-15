@@ -1,11 +1,14 @@
 {{> menu}}
 
 <section class="section">
-  <div class="title">
-    {{playlist.title}}
+<div class="container" style="max-width: 520px;">
+    <h1 class="title">Edit Service</h1>
+    {{> error}}
+    <form action="/service/{{salon._id}}/update/{{service._id}}" method="POST">
+      <div class="field"><label class="label">Title</label><div class="control"><input class="input" type="text" name="title" value="{{service.title}}"></div></div>
+      <div class="field"><label class="label">Category</label><div class="control"><input class="input" type="text" name="category" value="{{service.category}}"></div></div>
+      <div class="field"><label class="label">Price</label><div class="control"><input class="input" type="number" step="0.01" name="price" value="{{service.price}}"></div></div>
+      <button class="button is-link">Update Service</button>
+    </form>
   </div>
-  {{> list-tracks}}
-  {{> add-track}}
-
-
 </section>

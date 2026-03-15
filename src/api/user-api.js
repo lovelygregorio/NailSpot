@@ -1,103 +1,105 @@
 import Boom from "@hapi/boom";
 import { db } from "../models/db.js";
-import { UserSpec, UserSpecPlus, IdSpec, UserArray } from "../models/joi-schemas.js";
+import { UserSpec, UserSpecPlus, IdSpec, UserArray, UserCredentialsSpec, } from "../models/joi-schemas.js";
 import { validationError } from "./logger.js";
 import { createToken } from "./jwt-utils.js";
 
 export const userApi = {
   find: {
-    auth: {
-      strategy: "jwt",
-    },
-    handler: async function (request, h) {
-      try {
-        const users = await db.userStore.getAllUsers();
-        return users;
-      } catch (err) {
-        return Boom.serverUnavailable("Database Error");
-      }
-    },
+    auth: false,
     tags: ["api"],
-    description: "Get all userApi",
-    notes: "Returns details of all userApi",
+    description: "Get all users",
+    notes: "Returns all users",
     response: { schema: UserArray, failAction: validationError },
+     handler: async function () {
+      const users = await db.userStore.getAllUsers();
+      return users.map((user) => ({
+        _id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        isAdmin: user.isAdmin ?? false,
+      }));
+    },
   },
 
+  
   findOne: {
-    auth: {
-      strategy: "jwt",
-    },
-    handler: async function (request, h) {
-      try {
-        const user = await db.userStore.getUserById(request.params.id);
-        if (!user) {
-          return Boom.notFound("No User with this id");
-        }
-        return user;
-      } catch (err) {
-        return Boom.serverUnavailable("No User with this id");
-      }
-    },
+    auth: false,
     tags: ["api"],
-    description: "Get a specific user",
-    notes: "Returns user details",
+    description: "Find a user",
+    notes: "Returns a user by id",
     validate: { params: { id: IdSpec }, failAction: validationError },
     response: { schema: UserSpecPlus, failAction: validationError },
+    handler: async function (request) {
+      const user = await db.userStore.getUserById(request.params.id);
+      if (!user) return Boom.notFound("No user with this id");
+        }
+        return {
+        _id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        isAdmin: user.isAdmin ?? false,
+      };
+    },
   },
-
+  
   create: {
     auth: false,
-    handler: async function (request, h) {
-      try {
-        const user = await db.userStore.addUser(request.payload);
-        if (user) {
-          return h.response(user).code(201);
-        }
-        return Boom.badImplementation("error creating user");
-      } catch (err) {
-        return Boom.serverUnavailable("Database Error");
-      }
-    },
     tags: ["api"],
     description: "Create a User",
     notes: "Returns the newly created user",
     validate: { payload: UserSpec, failAction: validationError },
     response: { schema: UserSpecPlus, failAction: validationError },
   },
-
-  deleteAll: {
-    auth: {
-      strategy: "jwt",
-    },
     handler: async function (request, h) {
-      try {
-        await db.userStore.deleteAll();
-        return h.response().code(204);
-      } catch (err) {
-        return Boom.serverUnavailable("Database Error");
+      const existingUser = await db.userStore.getUserByEmail(request.payload.email);
+      if (existingUser) {
+        return Boom.badRequest("Email already exists");
       }
+       const user = await db.userStore.addUser(request.payload);
     },
-    tags: ["api"],
-    description: "Delete all userApi",
-    notes: "All userApi removed from Playtime",
+      return h.response({
+        _id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        isAdmin: user.isAdmin ?? false,
+      }).code(201);
+    },
   },
 
   authenticate: {
     auth: false,
+    tags: ["api"],
+    description: "Authenticate a user",
+    notes: "Returns a JWT token if authentication is successful",
+    validate: { payload: UserCredentialsSpec, failAction: validationError 
+  },
     handler: async function (request, h) {
-      try {
         const user = await db.userStore.getUserByEmail(request.payload.email);
-        if (!user) {
-          return Boom.unauthorized("User not found");
-        }
         if (user.password !== request.payload.password) {
-          return Boom.unauthorized("Invalid password");
+          return Boom.unauthorized("Invalid email or password");
         }
-        const token = createToken(user);
-        return h.response({ success: true, token: token }).code(201);
-      } catch (err) {
-        return Boom.serverUnavailable("Database Error");
-      }
+     
+        return h.response({ success: true, toke: createToken(user), 
+          _id: user._id.toString(),
+      }).code(201);
+  },
+};
+
+ deleteAll: {
+    auth: "jwt",
+    tags: ["api"],
+    description: "Delete all users",
+    notes: "Removes all users from the database",
+    handler: async function () {
+      await db.userStore.deleteAll();
+      return { success: true };
     },
   },
 };

@@ -1,0 +1,53 @@
+{{> menu}}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title">Account Settings</h1>
+
+    <div class="box">
+      <form action="/account/update" method="POST">
+        <div class="field">
+          <label class="label">First Name</label>
+          <div class="control">
+            <input class="input" type="text" name="firstName" value="{{user.firstName}}" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Last Name</label>
+          <div class="control">
+            <input class="input" type="text" name="lastName" value="{{user.lastName}}" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Email</label>
+          <div class="control">
+            <input class="input" type="email" name="email" value="{{user.email}}" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">
+            <input class="input" type="password" name="password" placeholder="Enter new password" required>
+          </div>
+        </div>
+
+        <div class="control">
+          <button class="button is-primary">Update Account</button>
+        </div>
+      </form>
+    </div>
+
+    {{#if errors}}
+      <div class="notification is-danger mt-4">
+        <ul>
+          {{#each errors}}
+            <li>{{message}}</li>
+          {{/each}}
+        </ul>
+      </div>
+    {{/if}}
+  </div>
+</section>

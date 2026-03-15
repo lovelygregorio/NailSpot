@@ -1,37 +1,29 @@
 import { TrackSpec } from "../models/joi-schemas.js";
 import { db } from "../models/db.js";
 
-export const trackController = {
+export const serviceController = {
   index: {
     handler: async function (request, h) {
-      const playlist = await db.playlistStore.getPlaylistById(request.params.id);
-      const track = await db.trackStore.getTrackById(request.params.trackid);
-      const viewData = {
-        title: "Edit Song",
-        playlist: playlist,
-        track: track,
-      };
-      return h.view("track-view", viewData);
+      const  salon = await db.salonStore.getSalonById(request.params.id);
+      const service = await db.serviceStore.getServiceById(request.params.trackid);
+      return h.view("service-view", { title: "Edit Service", salon, service });
     },
   },
 
-  update: {
+  updateService: {
     validate: {
-      payload: TrackSpec,
+      payload: ServiceSpec,
       options: { abortEarly: false },
       failAction: function (request, h, error) {
-        return h.view("track-view", { title: "Edit track error", errors: error.details }).takeover().code(400);
+        const salon = await db.salonStore.getSalonById(request.params.id);
+        const service = await db.serviceStore.getServiceById(request.params.serviceid);
+        return h.view("service-view", { title: "Edit Service",salon, service, errors: error.details }).takeover().code(400);
       },
     },
     handler: async function (request, h) {
-      const track = await db.trackStore.getTrackById(request.params.trackid);
-      const newTrack = {
-        title: request.payload.title,
-        artist: request.payload.artist,
-        duration: Number(request.payload.duration),
-      };
-      await db.trackStore.updateTrack(track, newTrack);
-      return h.redirect(`/playlist/${request.params.id}`);
+      const service = await db.serviceStore.getServiceById(request.params.serviceid);
+      await db.serviceStore.updateService(service, request.payload);
+      return h.redirect(`/salon/${request.params.id}`);
     },
   },
 };

@@ -5,6 +5,7 @@ export const salonController = {
   index: {
     handler: async function (request, h) {
       const loggedInUser = await db.salonStore.getSalonById(request.params.id);
+      const salon = await db.salonStore.getSalonById(request.params.id);
 
       if (!salon) {
         return h.redirect("/dashboard");
@@ -14,36 +15,47 @@ export const salonController = {
         return h.redirect("/dashboard");
       }
 
-      return h.view("salon-view", viewData);
+      return h.view("salon-view", {
         title: "Salon Details",
         salon,
     });
     },
   },
 
-  addTrack: {
-    validate: {
-      payload: TrackSpec,
-      options: { abortEarly: false },
-      failAction: function (request, h, error) {
-        return h.view("playlist-view", { title: "Add track error", errors: error.details }).takeover().code(400);
-      },
-    },
+  addSalon: {
     handler: async function (request, h) {
-      const playlist = await db.playlistStore.getPlaylistById(request.params.id);
-      const newTrack = {
-        title: request.payload.title,
-        artist: request.payload.artist,
-        duration: Number(request.payload.duration),
+      const loggedInUser = request.auth.credentials;
+      const category = await db.categoryStore.getCategoryById(request.params.id);
+
+       if (!category) {
+        return h.redirect("/categories");
+      }
+
+      if (String(category.userid) !== String(loggedInUser._id)) {
+        return h.redirect("/categories");
+      }
+
+      const newSalon = {
+        name: request.payload.name,
+        area: request.payload.area,
+        address: request.payload.address,
+        services: request.payload.services,
+        rating: Number(request.payload.rating || 4),
+        notes: request.payload.notes,
+        latitude: Number(request.payload.latitude || 53.3498),
+        longitude: Number(request.payload.longitude || -6.2603),
+        categoryid: category._id,
+        userid: loggedInUser._id,
+      
       };
-      await db.trackStore.addTrack(playlist._id, newTrack);
-      return h.redirect(`/playlist/${playlist._id}`);
+      await db.salonStore.updateSalon(salon, updatedSalon);
+      return h.redirect(`/salon/${request.params.id}`);
     },
   },
 
-  deleteTrack: {
+ updateSalon: {
     handler: async function (request, h) {
-      const playlist = await db.playlistStore.getPlaylistById(request.params.id);
+      const loggedInUser = request.auth.credentials;
       await db.trackStore.deleteTrack(request.params.trackid);
       return h.redirect(`/playlist/${playlist._id}`);
     },

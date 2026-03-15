@@ -1,0 +1,107 @@
+<section class="section">
+  <div class="container">
+    <div class="box">
+      <h1 class="title">{{salon.name}}</h1>
+      <p class="subtitle">View and edit salon details</p>
+
+      <form action="/salon/{{salon._id}}/updatesalon" method="POST">
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <label class="label">Salon Name</label>
+            <input class="input" type="text" name="name" value="{{salon.name}}">
+          </div>
+
+          <div class="column is-half">
+            <label class="label">Area</label>
+            <input class="input" type="text" name="area" value="{{salon.area}}">
+          </div>
+
+          <div class="column is-full">
+            <label class="label">Address</label>
+            <input class="input" type="text" name="address" value="{{salon.address}}">
+          </div>
+
+          <div class="column is-half">
+            <label class="label">Services</label>
+            <input class="input" type="text" name="services" value="{{salon.services}}">
+          </div>
+
+          <div class="column is-half">
+            <label class="label">Rating</label>
+            <input class="input" type="number" name="rating" min="1" max="5" value="{{salon.rating}}">
+          </div>
+
+          <div class="column is-full">
+            <label class="label">Notes</label>
+            <textarea class="textarea" name="notes">{{salon.notes}}</textarea>
+          </div>
+
+          <div class="column is-half">
+            <label class="label">Latitude</label>
+            <input class="input" type="text" name="latitude" value="{{salon.latitude}}">
+          </div>
+
+          <div class="column is-half">
+            <label class="label">Longitude</label>
+            <input class="input" type="text" name="longitude" value="{{salon.longitude}}">
+          </div>
+        </div>
+
+        <button class="button is-link mt-4">Update Salon</button>
+      </form>
+    </div>
+
+    <div class="box">
+      <h2 class="title is-5">Salon Location</h2>
+      <div id="single-salon-map" style="height: 350px;"></div>
+    </div>
+
+    <div class="box">
+      <h2 class="title is-5">Add Service</h2>
+
+      <form action="/salon/{{salon._id}}/addservice" method="POST">
+        <div class="columns">
+          <div class="column">
+            <label class="label">Service Title</label>
+            <input class="input" type="text" name="title" placeholder="BIAB Refill">
+          </div>
+
+          <div class="column">
+            <label class="label">Category</label>
+            <input class="input" type="text" name="category" placeholder="BIAB">
+          </div>
+
+          <div class="column">
+            <label class="label">Price</label>
+            <input class="input" type="number" name="price" placeholder="45">
+          </div>
+        </div>
+
+        <button class="button is-primary mt-3">Add Service</button>
+      </form>
+    </div>
+
+    <div class="box">
+      <h2 class="title is-5">Services</h2>
+
+      {{#if salon.services}}
+        {{#each salon.services}}
+          <div class="media mb-4">
+            <div class="media-content">
+              <p><strong>{{title}}</strong></p>
+              <p>{{category}}</p>
+              <p>€{{price}}</p>
+            </div>
+            <div class="media-right">
+              <a href="/service/{{../salon._id}}/edit/{{_id}}" class="button is-small is-warning">Edit</a>
+              <a href="/salon/{{../salon._id}}/deleteservice/{{_id}}" class="button is-small is-danger">Delete</a>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <p>No services added yet.</p>
+      {{/if}}
+    </div>
+  </div>
+</section>
+

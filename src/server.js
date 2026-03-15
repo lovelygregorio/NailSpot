@@ -18,15 +18,10 @@ import { apiRoutes } from "./api-routes.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const result = dotenv.config();
-if (result.error) {
-  console.log(result.error.message);
-  process.exit(1);
-}
-
+ dotenv.config();
 const swaggerOptions = {
   info: {
-    title: "Playtime API",
+    title: "NailSpot API",
     version: "0.1",
   },
 };
@@ -34,6 +29,7 @@ const swaggerOptions = {
 async function init() {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
+    host: "localhost
   });
 
   await server.register(Cookie);
@@ -68,9 +64,10 @@ async function init() {
       password: process.env.cookie_password,
       isSecure: false,
     },
-    redirectTo: "/",
+    redirectTo: "/login",
     validate: accountsController.validate,
   });
+  
   server.auth.strategy("jwt", "jwt", {
     key: process.env.cookie_password,
     validate: validate,
