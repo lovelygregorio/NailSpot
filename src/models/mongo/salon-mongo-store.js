@@ -1,5 +1,5 @@
-import { Playlist } from "./playlist.js";
-import { trackMongoStore } from "./track-mongo-store.js";
+import { Playlist } from "./salon.js";
+import { trackMongoStore } from "./service-mongo-store.js";
 
 export const playlistMongoStore = {
   async getAllPlaylists() {

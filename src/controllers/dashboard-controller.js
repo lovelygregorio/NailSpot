@@ -1,7 +1,7 @@
 import { PlaylistSpec } from "../models/joi-schemas.js";
 import { db } from "../models/db.js";
 
-export const dashboardController = {
+const dashboardController = {
   index: {
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
@@ -15,26 +15,40 @@ export const dashboardController = {
     },
   },
 
-  addPlaylist: {
+ addSalon: {
     validate: {
-      payload: PlaylistSpec,
+      payload: SalonSpec,
       options: { abortEarly: false },
-      failAction: function (request, h, error) {
-        return h.view("dashboard-view", { title: "Add Playlist error", errors: error.details }).takeover().code(400);
-      },
+      failAction: async function (request, h, error) {
+        const loggedInUser = request.auth.credentials;
+        const viewData = await buildDashboardView(loggedInUser);
+        viewData.errors = error.details;
+        return h.view("dashboard-view", viewData).takeover().code(400);
     },
+  },
+
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
-      const newPlayList = {
+
+      const salonData = {
+        name: request.payload.name,
+        area: request.payload.area,
+        address: request.payload.address,
+        services: request.payload.services,
+        rating: Number(request.payload.rating || 4),
+        notes: request.payload.notes,
+        latitude: Number(request.payload.latitude || 53.3498),
+        longitude: Number(request.payload.longitude || -6.2603),
+        categoryid: request.payload.categoryid,
         userid: loggedInUser._id,
-        title: request.payload.title,
       };
-      await db.playlistStore.addPlaylist(newPlayList);
+      
+      await db.salonStore.addSalon(salonData);
       return h.redirect("/dashboard");
     },
   },
 
-  deletePlaylist: {
+  deleteSalon:: {
     handler: async function (request, h) {
       const playlist = await db.playlistStore.getPlaylistById(request.params.id);
       await db.playlistStore.deletePlaylistById(playlist._id);

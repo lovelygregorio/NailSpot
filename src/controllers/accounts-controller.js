@@ -8,12 +8,14 @@ export const accountsController = {
       return h.view("main", { title: "Welcome to NailSpot Dublin" });
     },
   },
+
   showSignup: {
     auth: false,
     handler: function (request, h) {
       return h.view("signup-view", { title: "Create your NailSpot account" });
     },
   },
+
   signup: {
     auth: false,
     validate: {
@@ -23,17 +25,7 @@ export const accountsController = {
         return h.view("signup-view", { title: "Sign up error", errors: error.details }).takeover().code(400);
       },
     },
-    ,
     handler: async function (request, h) {
-      const existingUser = await db.userStore.getUserByEmail(request.payload.email);
-  },
-  showSignup: {
-    auth: false,
-    handler: function (request, h) {
-      return h.view("signup-view", { title: "Create your NailSpot account" });
-    },
-  },
-  handler: async function (request, h) {
       const existingUser = await db.userStore.getUserByEmail(request.payload.email);
   
       if (existingUser) {
@@ -47,6 +39,14 @@ export const accountsController = {
       return h.redirect("/login");
     },
   },
+
+       showLogin: {
+          auth: false,
+          handler: function (request, h) {
+            return h.view("login-view", { title: "Login to NailSpot Dublin" });
+    },
+  },
+
 
  login: {
     auth: false,
@@ -157,7 +157,7 @@ validate:
     if (!user) {
     return { isValid: false };
   }
-  
+
     return { isValid: true, credentials: user };
   },
 };

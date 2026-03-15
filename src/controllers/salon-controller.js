@@ -1,15 +1,23 @@
 import { TrackSpec } from "../models/joi-schemas.js";
 import { db } from "../models/db.js";
 
-export const playlistController = {
+export const salonController = {
   index: {
     handler: async function (request, h) {
-      const playlist = await db.playlistStore.getPlaylistById(request.params.id);
-      const viewData = {
-        title: "Playlist",
-        playlist: playlist,
-      };
-      return h.view("playlist-view", viewData);
+      const loggedInUser = await db.salonStore.getSalonById(request.params.id);
+
+      if (!salon) {
+        return h.redirect("/dashboard");
+      }
+
+      if (String(salon.userid) !== String(loggedInUser._id)) {
+        return h.redirect("/dashboard");
+      }
+
+      return h.view("salon-view", viewData);
+        title: "Salon Details",
+        salon,
+    });
     },
   },
 
