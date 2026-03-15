@@ -2,13 +2,14 @@ import Mongoose from "mongoose";
 
 const { Schema } = Mongoose;
 
-const trackSchema = new Schema({
+const serviceSchema = new Schema({
   salonid: {
     type: Schema.Types.ObjectId,
     ref: "Salon",
   },
   title: String,
   category: String,
+  price: Number,
 });
 
-export const Track = Mongoose.model("Service", serviceSchema);
+export const Service = Mongoose.model("Service", serviceSchema);

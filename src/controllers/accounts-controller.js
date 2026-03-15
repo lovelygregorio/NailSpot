@@ -22,12 +22,15 @@ export const accountsController = {
       payload: UserSpec,
       options: { abortEarly: false },
       failAction: function (request, h, error) {
-        return h.view("signup-view", { title: "Sign up error", errors: error.details }).takeover().code(400);
+        return h.view("signup-view", {
+          title: "Sign up error",
+          errors: error.details,
+        }).takeover().code(400);
       },
     },
     handler: async function (request, h) {
       const existingUser = await db.userStore.getUserByEmail(request.payload.email);
-  
+
       if (existingUser) {
         return h.view("signup-view", {
           title: "Sign up error",
@@ -40,15 +43,16 @@ export const accountsController = {
     },
   },
 
-       showLogin: {
-          auth: false,
-          handler: function (request, h) {
-            return h.view("login-view", { title: "Login to NailSpot Dublin" });
+  showLogin: {
+    auth: false,
+    handler: function (request, h) {
+      return h.view("login-view", { title: "Login to NailSpot Dublin" });
     },
   },
 
 
- login: {
+
+  login: {
     auth: false,
     validate: {
       payload: UserCredentialsSpec,
@@ -102,9 +106,12 @@ export const accountsController = {
     },
   },
 
-  //update account
 
-   updateAccount: {
+
+
+
+
+  updateAccount: {
     validate: {
       payload: UserSpec,
       options: { abortEarly: false },
@@ -146,18 +153,20 @@ export const accountsController = {
     },
   },
 
-
-validate: 
-  async validate (request, session) {
+  validate: async function (request, session) {
     if (!session || !session._id) {
       return { isValid: false };
     }
+
     const user = await db.userStore.getUserById(session._id);
 
     if (!user) {
-    return { isValid: false };
-  }
+      return { isValid: false };
+    }
 
-    return { isValid: true, credentials: user };
+    return {
+      isValid: true,
+      credentials: user,
+    };
   },
 };

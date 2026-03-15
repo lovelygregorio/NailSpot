@@ -1,14 +1,14 @@
 import { v4 } from "uuid";
 
-let services= [];
+let services = [];
 
-export const servicesMemStore = {
+export const serviceMemStore = {
   async getAllServices() {
     return services;
   },
 
   async addService(salonidOrService, service) {
-   const serviceToSave = service
+    const serviceToSave = service
       ? { ...service, salonid: salonidOrService }
       : { ...salonidOrService };
     serviceToSave._id = v4();
@@ -24,29 +24,27 @@ export const servicesMemStore = {
     return services.find((service) => service._id === id) || null;
   },
 
-  
   async deleteService(id) {
-     const index = services.findIndex((service) => service._id === id);
+    const index = services.findIndex((service) => service._id === id);
     if (index !== -1) services.splice(index, 1);
   },
 
-  async deleteServiceById() {
-     return this.deleteService(id);
+  async deleteServiceById(id) {
+    return this.deleteService(id);
   },
 
-async deleteServicesBySalonId(id) {
+  async deleteServicesBySalonId(id) {
     services = services.filter((service) => service.salonid !== id);
-  }
+  },
 
-async deleteAllServices() {
+  async deleteAllServices() {
     services = [];
   },
-
 
   async updateService(service, updatedService) {
     service.title = updatedService.title;
     service.category = updatedService.category;
-    service.price = updatedService.duration;
+    service.price = updatedService.price;
     return service;
   },
 };

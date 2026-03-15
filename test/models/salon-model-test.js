@@ -4,7 +4,7 @@ import { testUser, testSalon } from "../fixtures.js";
 import { assertSubset } from "../test-utils.js";
 
 suite("Salon Model tests", () => {
-
+  let user = null;
   setup(async () => {
     await db.init("mongo");
     await db.salonStore.deleteAllSalons();
@@ -13,10 +13,8 @@ suite("Salon Model tests", () => {
   });
 
   test("create a salon", async () => {
-    const salon = await db.salonStore.addSalon({ ...testSalon, userid: user._id });
-    assertSubset(testSalon, salon);
-    assert.isDefined(salon._id);
- });
+    const returnedSalon = await db.salonStore.addSalon({ ...testSalon, userid: user._id });
+    assert.isNotNull(returnedSalon);
+    assertSubset({ ...testSalon, userid: user._id }, returnedSalon);
+  });
 });
-
- 

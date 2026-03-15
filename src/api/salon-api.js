@@ -1,7 +1,7 @@
 import Boom from "@hapi/boom";
-import { db } from "../models/db.js";
-import  { IdSpec, SalonSpec, SalonSpecPlus, SalonArraySpec } from "../models/joi-schemas.js";
 import { validationError } from "./logger.js";
+import { IdSpec, SalonSpec, SalonSpecPlus, SalonArraySpec } from "../models/joi-schemas.js";
+import { db } from "../models/db.js";
 
 export const salonApi = {
   find: {
@@ -11,9 +11,9 @@ export const salonApi = {
     notes: "Returns all salons",
     response: { schema: SalonArraySpec, failAction: validationError },
     handler: async function () {
-        const salon = await db.salonStore.getAllSalons();
-        return salons.map((salon) => ({
-        _id: salon._id.toString(),     
+      const salons = await db.salonStore.getAllSalons();
+      return salons.map((salon) => ({
+        _id: salon._id.toString(),
         userid: salon.userid ? salon.userid.toString() : undefined,
         name: salon.name,
         area: salon.area,
@@ -29,12 +29,15 @@ export const salonApi = {
   },
 
   findOne: {
-    auth:jwt",
+    auth: "jwt",
     tags: ["api"],
-    description: "Find a Salon",
+    description: "Find a salon",
     notes: "Returns a salon by id",
-    validate: { params: { id: IdSpec }, failAction: validationError },
-    response: { schema: SalonSpecPlus, failAction: validationError },
+    validate: {
+      params: { id: IdSpec },
+      failAction: validationError,
+    },
+    response: { schema: SalonSpecPlus.unknown(true), failAction: validationError },
     handler: async function (request) {
       const salon = await db.salonStore.getSalonById(request.params.id);
       if (!salon) {
@@ -62,7 +65,10 @@ export const salonApi = {
     tags: ["api"],
     description: "Create a salon",
     notes: "Returns the newly created salon",
-    validate: { payload: SalonSpec }, failAction: validationError,},
+    validate: {
+      payload: SalonSpec,
+      failAction: validationError,
+    },
     response: { schema: SalonSpecPlus.unknown(true), failAction: validationError },
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
@@ -96,12 +102,14 @@ export const salonApi = {
     tags: ["api"],
     description: "Delete a salon",
     notes: "Deletes a salon by id",
-    validate: { params: { id: IdSpec }, failAction: validationError,
-  },
+    validate: {
+      params: { id: IdSpec },
+      failAction: validationError,
+    },
     handler: async function (request) {
       const salon = await db.salonStore.getSalonById(request.params.id);
       if (!salon) {
-        return Boom.notFound("No Salon with this id");
+        return Boom.notFound("No salon with this id");
       }
       await db.serviceStore.deleteServicesBySalonId(request.params.id);
       await db.salonStore.deleteSalonById(request.params.id);
@@ -115,8 +123,9 @@ export const salonApi = {
     description: "Delete all salons",
     notes: "Removes all salons from the database",
     handler: async function () {
-        await db.salonStore.deleteAllSalons();
-        return { success: true };
-  },
+      await db.serviceStore.deleteAllServices();
+      await db.salonStore.deleteAllSalons();
+      return { success: true };
+    },
   },
 };

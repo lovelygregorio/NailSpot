@@ -1,0 +1,15 @@
+<div class="box pink-card">
+  <h2 class="title is-4">Saved Service Prices</h2>
+  {{#each salon.servicesList}}
+    <div class="box">
+      <p><strong>{{title}}</strong> - {{category}}</p>
+      <p>€{{price}}</p>
+      <div class="buttons mt-3">
+        <a class="button is-small is-link is-light" href="/service/{{salonid}}/edit/{{_id}}">Edit</a>
+        <a class="button is-small is-danger" href="/salon/{{salonid}}/deleteservice/{{_id}}">Delete</a>
+      </div>
+    </div>
+  {{else}}
+    <p>No individual services added yet.</p>
+  {{/each}}
+</div>

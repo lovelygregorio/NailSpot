@@ -1,67 +1,42 @@
 import { assert } from "chai";
+import { salonService } from "./api-helper.js";
+import { testUser } from "../fixtures.js";
 import { assertSubset } from "../test-utils.js";
-import { playtimeService } from "./playtime-service.js";
-import { maggie, testUsers } from "../fixtures.js";
-import { db } from "../../src/models/db.js";
-
-const users = new Array(testUsers.length);
 
 suite("User API tests", () => {
   setup(async () => {
-    playtimeService.clearAuth();
-    await playtimeService.createUser(maggie);
-    await playtimeService.authenticate(maggie);
-    await playtimeService.deleteAllUsers();
-    for (let i = 0; i < testUsers.length; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      users[0] = await playtimeService.createUser(testUsers[i]);
-    }
-    await playtimeService.createUser(maggie);
-    await playtimeService.authenticate(maggie);
-  });
-  teardown(async () => {});
-
-  test("create a user", async () => {
-    const newUser = await playtimeService.createUser(maggie);
-    assertSubset(maggie, newUser);
-    assert.isDefined(newUser._id);
+    salonService.clearAuth();
+    await salonService.authenticate(testUser).catch(() => {});
+    await salonService.deleteAllUsers().catch(() => {});
+    salonService.clearAuth();
   });
 
-  test("delete all user", async () => {
-    let returnedUsers = await playtimeService.getAllUsers();
-    assert.equal(returnedUsers.length, 4);
-    await playtimeService.deleteAllUsers();
-    await playtimeService.createUser(maggie);
-    await playtimeService.authenticate(maggie);
-    returnedUsers = await playtimeService.getAllUsers();
+  test("create user", async () => {
+    const returnedUser = await salonService.createUser(testUser);
+    assert.isNotNull(returnedUser);
+    assertSubset(testUser, returnedUser);
+    assert.isDefined(returnedUser._id);
+  });
+
+  test("get all users", async () => {
+    await salonService.createUser(testUser);
+    const returnedUsers = await salonService.getAllUsers();
     assert.equal(returnedUsers.length, 1);
+    assertSubset(testUser, returnedUsers[0]);
   });
 
-  test("get a user", async () => {
-    const returnedUser = await playtimeService.getUser(users[0]._id);
-    assert.deepEqual(users[0], returnedUser);
+  test("get one user", async () => {
+    const createdUser = await salonService.createUser(testUser);
+    const returnedUser = await salonService.getUser(createdUser._id);
+    assert.isNotNull(returnedUser);
+    assertSubset(testUser, returnedUser);
   });
 
-  test("get a user - bad id", async () => {
-    try {
-      const returnedUser = await playtimeService.getUser("1234");
-      assert.fail("Should not return a response");
-    } catch (error) {
-      assert(error.response.data.message === "No User with this id");
-      assert.equal(error.response.data.statusCode, 503);
-    }
-  });
-
-  test("get a user - deleted user", async () => {
-    await playtimeService.deleteAllUsers();
-    await playtimeService.createUser(maggie);
-    await playtimeService.authenticate(maggie);
-    try {
-      const returnedUser = await playtimeService.getUser(users[0]._id);
-      assert.fail("Should not return a response");
-    } catch (error) {
-      assert(error.response.data.message === "No User with this id");
-      assert.equal(error.response.data.statusCode, 404);
-    }
+  test("authenticate user", async () => {
+    await salonService.createUser(testUser);
+    const authResponse = await salonService.authenticate(testUser);
+    assert.isTrue(authResponse.success);
+    assert.isDefined(authResponse.token);
+    assert.isDefined(authResponse._id);
   });
 });

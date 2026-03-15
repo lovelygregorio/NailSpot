@@ -1,26 +1,28 @@
 import { assert } from "chai";
-import { playtimeService } from "./playtime-service.js";
+import { salonService } from "./api-helper.js";
 import { decodeToken } from "../../src/api/jwt-utils.js";
-import { maggie } from "../fixtures.js";
+import { testUser } from "../fixtures.js";
 
-suite("Authentication API tests", async () => {
+suite("Authentication API tests", () => {
   setup(async () => {
-    playtimeService.clearAuth();
-    await playtimeService.createUser(maggie);
-    await playtimeService.authenticate(maggie);
-    await playtimeService.deleteAllUsers();
+    salonService.clearAuth();
+    await salonService.authenticate(testUser).catch(() => {});
+    await salonService.deleteAllUsers().catch(() => {});
+    salonService.clearAuth();
   });
 
   test("authenticate", async () => {
-    const returnedUser = await playtimeService.createUser(maggie);
-    const response = await playtimeService.authenticate(maggie);
-    assert(response.success);
+    const returnedUser = await salonService.createUser(testUser);
+    const response = await salonService.authenticate(testUser);
+
+    assert.isTrue(response.success);
     assert.isDefined(response.token);
+    assert.equal(response._id, returnedUser._id);
   });
 
   test("verify Token", async () => {
-    const returnedUser = await playtimeService.createUser(maggie);
-    const response = await playtimeService.authenticate(maggie);
+    const returnedUser = await salonService.createUser(testUser);
+    const response = await salonService.authenticate(testUser);
 
     const userInfo = decodeToken(response.token);
     assert.equal(userInfo.email, returnedUser.email);
@@ -28,9 +30,9 @@ suite("Authentication API tests", async () => {
   });
 
   test("check Unauthorized", async () => {
-    playtimeService.clearAuth();
+    salonService.clearAuth();
     try {
-      await playtimeService.deleteAllUsers();
+      await salonService.deleteAllUsers();
       assert.fail("Route not protected");
     } catch (error) {
       assert.equal(error.response.data.statusCode, 401);

@@ -1,8 +1,88 @@
+<div class="box pink-card">
+  <h2 class="title is-4">Add Nail Salon</h2>
 
-  <form action="/dashboard/addplaylist" method="POST">
+  <form action="/dashboard/addsalon" method="POST">
     <div class="field">
-      <label class="label">Playlist Title</label>
-      <input class="input" type="text" placeholder="Enter playlist title" name="title">
+      <label class="label">Salon Name</label>
+      <div class="control">
+        <input class="input" type="text" name="name" placeholder="Tropical Nails" required>
+      </div>
     </div>
-    <button class="button is-link">Add Playlist</button>
+
+    <div class="field">
+      <label class="label">Area</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select name="area" required>
+            <option value="">Select Area</option>
+            <option>North Dublin</option>
+            <option>South Dublin</option>
+            <option>Central Dublin</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Category</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select name="categoryid" required>
+            <option value="">Select Category</option>
+            {{#each categories}}
+              <option value="{{_id}}">{{title}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Address</label>
+      <div class="control">
+        <input class="input" type="text" name="address" placeholder="24 Henry St, Dublin 1" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Services</label>
+      <div class="control">
+        <input class="input" type="text" name="services" placeholder="Gel, Acrylic" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Rating</label>
+      <div class="control">
+        <input class="input" type="number" name="rating" min="1" max="5" value="4" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Notes</label>
+      <div class="control">
+        <textarea class="textarea" name="notes" placeholder="Friendly staff"></textarea>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Latitude</label>
+      <div class="control">
+        <input class="input" type="number" step="any" name="latitude" placeholder="53.3498" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Longitude</label>
+      <div class="control">
+        <input class="input" type="number" step="any" name="longitude" placeholder="-6.2603" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <button class="button is-link">Add Salon</button>
+      </div>
+    </div>
   </form>
+</div>

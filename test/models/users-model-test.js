@@ -1,10 +1,9 @@
 import { assert } from "chai";
 import { db } from "../../src/models/db.js";
-import { testUsers } from "../fixtures.js";
+import { testUser } from "../fixtures.js";
 import { assertSubset } from "../test-utils.js";
 
 suite("User Model tests", () => {
-
   setup(async () => {
     await db.init("mongo");
     await db.userStore.deleteAll();
@@ -17,4 +16,3 @@ suite("User Model tests", () => {
     assert.isDefined(returnedUser._id);
   });
 });
-

@@ -1,0 +1,35 @@
+<div class="box pink-card mt-5">
+  <h2 class="title is-4">Saved Salons</h2>
+  <div class="columns is-multiline">
+    {{#each salons}}
+      <div class="column is-half">
+        <div class="box">
+          <div class="level is-mobile">
+            <div class="level-left">
+              <div>
+                <h3 class="title is-5 mb-2"><a href="/salon/{{_id}}">{{name}}</a></h3>
+                <p><strong>Area:</strong> {{area}}</p>
+                <p><strong>Address:</strong> {{address}}</p>
+                <p><strong>Services:</strong> {{services}}</p>
+                <p><strong>Rating:</strong> {{rating}} / 5</p>
+                <p><strong>Notes:</strong> {{notes}}</p>
+              </div>
+            </div>
+          </div>
+          <div class="tags mt-3">
+            <span class="tag tag-soft">{{area}}</span>
+            <span class="tag tag-soft">{{services}}</span>
+          </div>
+          <div class="buttons mt-4">
+            <a class="button is-small is-link is-light" href="/salon/{{_id}}">View Details</a>
+            <a class="button is-small is-danger" href="/dashboard/deletesalon/{{_id}}">Delete</a>
+          </div>
+        </div>
+      </div>
+    {{else}}
+      <div class="column is-12">
+        <p>No salons yet. Add one above or load the Dublin demo data.</p>
+      </div>
+    {{/each}}
+  </div>
+</div>

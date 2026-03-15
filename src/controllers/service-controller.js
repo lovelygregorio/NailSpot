@@ -1,11 +1,11 @@
-import { TrackSpec } from "../models/joi-schemas.js";
+import { ServiceSpec } from "../models/joi-schemas.js";
 import { db } from "../models/db.js";
 
 export const serviceController = {
   index: {
     handler: async function (request, h) {
-      const  salon = await db.salonStore.getSalonById(request.params.id);
-      const service = await db.serviceStore.getServiceById(request.params.trackid);
+      const salon = await db.salonStore.getSalonById(request.params.id);
+      const service = await db.serviceStore.getServiceById(request.params.serviceid);
       return h.view("service-view", { title: "Edit Service", salon, service });
     },
   },
@@ -14,10 +14,10 @@ export const serviceController = {
     validate: {
       payload: ServiceSpec,
       options: { abortEarly: false },
-      failAction: function (request, h, error) {
+      failAction: async function (request, h, error) {
         const salon = await db.salonStore.getSalonById(request.params.id);
         const service = await db.serviceStore.getServiceById(request.params.serviceid);
-        return h.view("service-view", { title: "Edit Service",salon, service, errors: error.details }).takeover().code(400);
+        return h.view("service-view", { title: "Edit Service", salon, service, errors: error.details }).takeover().code(400);
       },
     },
     handler: async function (request, h) {

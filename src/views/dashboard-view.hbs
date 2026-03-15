@@ -1,6 +1,60 @@
-{{> menu active="dashboard"}}
-
+{{> menu}}
 <section class="section">
-  {{> list-playlists}}
-  {{> add-playlist}}
+  <div class="container">
+    <div class="level">
+      <div class="level-left">
+        <div>
+          <h1 class="title">Salon Dashboard</h1>
+          <p class="subtitle">Save and explore nail salons in Dublin.</p>
+        </div>
+      </div>
+      <div class="level-right">
+        <a class="button is-link is-light" href="/dashboard/load-demo">Load Dublin Demo Salons</a>
+      </div>
+    </div>
+    {{> error}}
+    <div class="columns">
+      <div class="column is-5">
+        {{> add-salon}}
+      </div>
+      <div class="column is-7">
+        <div class="box pink-card">
+          <h2 class="title is-4">Dublin Salon Map</h2>
+          <div id="dashboard-map" class="map-box"></div>
+        </div>
+      </div>
+    </div>
+    {{> list-salons}}
+  </div>
 </section>
+
+<script>
+  const salons = {{{salonsJson}}} || [];
+
+  const map = L.map("dashboard-map").setView([53.3498, -6.2603], 12);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors"
+  }).addTo(map);
+
+  if (salons.length > 0) {
+    const bounds = [];
+
+    salons.forEach((salon) => {
+      const lat = Number(salon.latitude || 53.3498);
+      const lng = Number(salon.longitude || -6.2603);
+
+      bounds.push([lat, lng]);
+
+      L.marker([lat, lng]).addTo(map)
+        .bindPopup(`<strong>${salon.name}</strong><br>${salon.area}<br>${salon.address}`);
+    });
+
+    map.fitBounds(bounds, { padding: [20, 20] });
+  } else {
+    L.marker([53.3498, -6.2603]).addTo(map)
+      .bindPopup("Dublin City Centre")
+      .openPopup();
+  }
+</script>

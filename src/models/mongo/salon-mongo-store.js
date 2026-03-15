@@ -5,9 +5,13 @@ export const salonMongoStore = {
   async getAllSalons() {
     return Salon.find().lean();
   },
-  
+
   async getUserSalons(userid) {
     return Salon.find({ userid }).lean();
+  },
+
+  async getSalonsByCategoryId(categoryid) {
+    return Salon.find({ categoryid }).lean();
   },
 
   async addSalon(salon) {
@@ -16,23 +20,21 @@ export const salonMongoStore = {
     return this.getSalonById(salonObj._id);
   },
 
-
-   async getSalonsByCategoryId(categoryid) {
-    return Salon.find({ categoryid }).lean();
-  },
-
   async getSalonById(id) {
     if (!id) return null;
-      try { 
+    try {
       const salon = await Salon.findOne({ _id: id }).lean();
-      if (!salon) { return null;
-        return { ...salon, services = await serviceMongoStore.getServicesBySalonId(salon._id), };
-      } catch {
-    return null;
+      if (!salon) return null;
+      return {
+        ...salon,
+        services: await serviceMongoStore.getServicesBySalonId(salon._id),
+      };
+    } catch {
+      return null;
+    }
   },
-}
 
-   async updateSalon(salonOrId, updatedSalon) {
+  async updateSalon(salonOrId, updatedSalon) {
     const id = typeof salonOrId === "object" ? salonOrId._id : salonOrId;
     const salon = await Salon.findOne({ _id: id });
     if (salon) {
@@ -55,12 +57,12 @@ export const salonMongoStore = {
   async deleteSalonById(id) {
     try {
       await Salon.deleteOne({ _id: id });
-    } catch (error) {
+    } catch {
       console.log("bad id");
     }
   },
 
   async deleteAllSalons() {
     await Salon.deleteMany({});
-  }
+  },
 };

@@ -1,0 +1,9 @@
+<div class="box pink-card">
+  <h2 class="title is-4">Add Price or Service Option</h2>
+  <form action="/salon/{{salon._id}}/addservice" method="POST">
+    <div class="field"><label class="label">Service Name</label><div class="control"><input class="input" type="text" name="title" placeholder="Gel Manicure"></div></div>
+    <div class="field"><label class="label">Category</label><div class="control"><input class="input" type="text" name="category" placeholder="Gel / BIAB / Acrylic"></div></div>
+    <div class="field"><label class="label">Price (€)</label><div class="control"><input class="input" type="number" name="price" step="0.01"></div></div>
+    <button class="button is-link">Add Service</button>
+  </form>
+</div>

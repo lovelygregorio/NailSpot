@@ -1,90 +1,95 @@
 import axios from "axios";
-import { maggie, serviceUrl } from "../fixtures.js";
+import { serviceUrl } from "../fixtures.js";
 
-export const playtimeService = {
-  playtimeUrl: serviceUrl,
+export const salonService = {
+  salonUrl: serviceUrl,
 
   async createUser(user) {
-    const res = await axios.post(`${this.playtimeUrl}/api/users`, user);
-    return res.data;
-  },
-
-  async getUser(id) {
-    const res = await axios.get(`${this.playtimeUrl}/api/users/${id}`);
-    return res.data;
-  },
-
-  async getAllUsers() {
     try {
-      const res = await axios.get(`${this.playtimeUrl}/api/users`);
-      return res.data;
-    } catch (e) {
-      return null;
+      const response = await axios.post(`${this.salonUrl}/api/users`, user);
+      return response.data;
+    } catch (error) {
+      console.log("CREATE USER STATUS:", error.response?.status);
+      console.log("CREATE USER DATA:", error.response?.data);
+      throw error;
     }
   },
 
-  async deleteAllUsers() {
-    const res = await axios.delete(`${this.playtimeUrl}/api/users`);
-    return res.data;
-  },
-
-  async createPlaylist(playlist) {
-    const res = await axios.post(`${this.playtimeUrl}/api/playlists`, playlist);
-    return res.data;
-  },
-
-  async deleteAllPlaylists() {
-    const response = await axios.delete(`${this.playtimeUrl}/api/playlists`);
+  async getAllUsers() {
+    const response = await axios.get(`${this.salonUrl}/api/users`);
     return response.data;
   },
 
-  async deletePlaylist(id) {
-    const response = await axios.delete(`${this.playtimeUrl}/api/playlists/${id}`);
-    return response;
+  async getUser(id) {
+    const response = await axios.get(`${this.salonUrl}/api/users/${id}`);
+    return response.data;
   },
 
-  async getAllPlaylists() {
-    const res = await axios.get(`${this.playtimeUrl}/api/playlists`);
-    return res.data;
-  },
-
-  async getPlaylist(id) {
-    const res = await axios.get(`${this.playtimeUrl}/api/playlists/${id}`);
-    return res.data;
-  },
-
-  async getAllTracks() {
-    const res = await axios.get(`${this.playtimeUrl}/api/tracks`);
-    return res.data;
-  },
-
-  async createTrack(id, track) {
-    const res = await axios.post(`${this.playtimeUrl}/api/playlists/${id}/tracks`, track);
-    return res.data;
-  },
-
-  async deleteAllTracks() {
-    const res = await axios.delete(`${this.playtimeUrl}/api/tracks`);
-    return res.data;
-  },
-
-  async getTrack(id) {
-    const res = await axios.get(`${this.playtimeUrl}/api/tracks/${id}`);
-    return res.data;
-  },
-
-  async deleteTrack(id) {
-    const res = await axios.delete(`${this.playtimeUrl}/api/tracks/${id}`);
-    return res.data;
+  async deleteAllUsers() {
+    const response = await axios.delete(`${this.salonUrl}/api/users`);
+    return response.data;
   },
 
   async authenticate(user) {
-    const response = await axios.post(`${this.playtimeUrl}/api/users/authenticate`, user);
-    axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.token;
+    const response = await axios.post(`${this.salonUrl}/api/users/authenticate`, {
+      email: user.email,
+      password: user.password,
+    });
+    axios.defaults.headers.common.Authorization = `Bearer ${response.data.token}`;
     return response.data;
   },
 
-  async clearAuth() {
-    axios.defaults.headers.common["Authorization"] = "";
+  clearAuth() {
+    axios.defaults.headers.common.Authorization = "";
+  },
+
+  async createSalon(salon) {
+    const response = await axios.post(`${this.salonUrl}/api/salons`, salon);
+    return response.data;
+  },
+
+  async getAllSalons() {
+    const response = await axios.get(`${this.salonUrl}/api/salons`);
+    return response.data;
+  },
+
+  async getSalon(id) {
+    const response = await axios.get(`${this.salonUrl}/api/salons/${id}`);
+    return response.data;
+  },
+
+  async deleteSalon(id) {
+    const response = await axios.delete(`${this.salonUrl}/api/salons/${id}`);
+    return response.data;
+  },
+
+  async deleteAllSalons() {
+    const response = await axios.delete(`${this.salonUrl}/api/salons`);
+    return response.data;
+  },
+
+  async createService(salonId, service) {
+    const response = await axios.post(`${this.salonUrl}/api/salons/${salonId}/services`, service);
+    return response.data;
+  },
+
+  async getAllServices() {
+    const response = await axios.get(`${this.salonUrl}/api/services`);
+    return response.data;
+  },
+
+  async getService(id) {
+    const response = await axios.get(`${this.salonUrl}/api/services/${id}`);
+    return response.data;
+  },
+
+  async deleteService(id) {
+    const response = await axios.delete(`${this.salonUrl}/api/services/${id}`);
+    return response.data;
+  },
+
+  async deleteAllServices() {
+    const response = await axios.delete(`${this.salonUrl}/api/services`);
+    return response.data;
   },
 };

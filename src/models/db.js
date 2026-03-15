@@ -1,36 +1,39 @@
 import { userMemStore } from "./mem/user-mem-store.js";
-import { playlistMemStore } from "./mem/salon-mem-store.js";
-import { trackMemStore } from "./mem/service-mem-store.js";
-import { userJsonStore } from "./json/user-json-store.js";
-import { playlistJsonStore } from "./json/playlist-json-store.js";
-import { trackJsonStore } from "./json/track-json-store.js";
+import { salonMemStore } from "./mem/salon-mem-store.js";
+import { serviceMemStore } from "./mem/service-mem-store.js";
+import { categoryMemStore } from "./mem/category-mem-store.js";
+
 import { userMongoStore } from "./mongo/user-mongo-store.js";
-import { playlistMongoStore } from "./mongo/salon-mongo-store.js";
-import { trackMongoStore } from "./mongo/service-mongo-store.js";
+import { salonMongoStore } from "./mongo/salon-mongo-store.js";
+import { serviceMongoStore } from "./mongo/service-mongo-store.js";
+import { categoryMongoStore } from "./mongo/category-mongo-store.js";
+
 import { connectMongo } from "./mongo/connect.js";
 
 export const db = {
-  userStore: null,
-  playlistStore: null,
-  trackStore: null,
+  userStore: userMongoStore,
+  salonStore: salonMongoStore,
+  serviceStore: serviceMongoStore,
+  categoryStore: categoryMongoStore,
 
-  init(storeType) {
+  async init(storeType) {
     switch (storeType) {
-      case "json" :
-        this.userStore = userJsonStore;
-        this.playlistStore = playlistJsonStore;
-        this.trackStore = trackJsonStore;
-        break;
-      case "mongo" :
+      case "mongo":
         this.userStore = userMongoStore;
-        this.playlistStore = playlistMongoStore;
-        this.trackStore = trackMongoStore;
-        connectMongo();
+        this.salonStore = salonMongoStore;
+        this.serviceStore = serviceMongoStore;
+        this.categoryStore = categoryMongoStore;
+
+        await connectMongo();
         break;
-      default :
+
+      case "mem":
+      default:
         this.userStore = userMemStore;
-        this.playlistStore = playlistMemStore;
-        this.trackStore = trackMemStore;
+        this.salonStore = salonMemStore;
+        this.serviceStore = serviceMemStore;
+        this.categoryStore = categoryMemStore;
+        break;
     }
-  }
+  },
 };

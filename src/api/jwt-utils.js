@@ -1,37 +1,23 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { db } from "../models/db.js";
 
 dotenv.config();
 
 export function createToken(user) {
   const payload = {
-    id: user._id,
+    userId: user._id.toString(),
     email: user.email,
   };
-  const options = {
-    algorithm: "HS256",
-    expiresIn: "1h",
-  };
-  return jwt.sign(payload, process.env.cookie_password, options);
+
+  const secret = process.env.JWT_SECRET || process.env.cookie_password || "supersecretkey";
+  return jwt.sign(payload, secret);
 }
 
 export function decodeToken(token) {
-  const userInfo = {};
-  try {
-    const decoded = jwt.verify(token, process.env.cookie_password);
-    userInfo.userId = decoded.id;
-    userInfo.email = decoded.email;
-  } catch (e) {
-    console.log(e.message);
-  }
-  return userInfo;
+  const secret = process.env.JWT_SECRET || process.env.cookie_password || "supersecretkey";
+  return jwt.verify(token, secret);
 }
 
-export async function validate(decoded, request) {
-  const user = await db.userStore.getUserById(decoded.id);
-  if (!user) {
-    return { isValid: false };
-  }
-  return { isValid: true, credentials: user };
+export async function validate(decoded) {
+  return { isValid: !!decoded.userId };
 }

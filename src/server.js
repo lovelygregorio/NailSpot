@@ -9,27 +9,29 @@ import jwt from "hapi-auth-jwt2";
 import HapiSwagger from "hapi-swagger";
 import { fileURLToPath } from "url";
 import Handlebars from "handlebars";
+
 import { webRoutes } from "./web-routes.js";
+import { apiRoutes } from "./api-routes.js";
 import { db } from "./models/db.js";
 import { accountsController } from "./controllers/accounts-controller.js";
 import { validate } from "./api/jwt-utils.js";
-import { apiRoutes } from "./api-routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
- dotenv.config();
+dotenv.config();
+
 const swaggerOptions = {
   info: {
     title: "NailSpot API",
-    version: "0.1",
+    version: "1.0",
   },
 };
 
-async function init() {
+export async function init() {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
-    host: "localhost
+    host: "localhost",
   });
 
   await server.register(Cookie);
@@ -38,10 +40,7 @@ async function init() {
   await server.register([
     Inert,
     Vision,
-    {
-      plugin: HapiSwagger,
-      options: swaggerOptions,
-    },
+    { plugin: HapiSwagger, options: swaggerOptions },
   ]);
 
   server.validator(Joi);
@@ -67,24 +66,34 @@ async function init() {
     redirectTo: "/login",
     validate: accountsController.validate,
   });
-  
+
   server.auth.strategy("jwt", "jwt", {
-    key: process.env.cookie_password,
-    validate: validate,
-    verifyOptions: { algorithms: ["HS256"] },
+    key: process.env.JWT_SECRET || process.env.cookie_password,
+    validate,
+    verifyOptions: {
+      algorithms: ["HS256"],
+    },
   });
+
   server.auth.default("session");
 
-  db.init("mongo");
+  await db.init("mongo");
+
   server.route(webRoutes);
   server.route(apiRoutes);
-  await server.start();
-  console.log("Server running on %s", server.info.uri);
+
+  return server;
 }
 
-process.on("unhandledRejection", (err) => {
-  console.log(err);
-  process.exit(1);
-});
+async function start() {
+  const server = await init();
+  await server.start();
+  console.log("Server running on", server.info.uri);
+}
 
-init();
+if (process.env.NODE_ENV !== "test") {
+  start().catch((err) => {
+    console.log(err);
+    process.exit(1);
+  });
+}

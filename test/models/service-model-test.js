@@ -1,10 +1,10 @@
 import { assert } from "chai";
 import { db } from "../../src/models/db.js";
-import {  testUser, testSalon, testService } from "../fixtures.js";
+import { testUser, testSalon, testService } from "../fixtures.js";
 import { assertSubset } from "../test-utils.js";
 
 suite("Service Model tests", () => {
-let user = null;
+  let user = null;
   let salon = null;
   setup(async () => {
     await db.init("mongo");

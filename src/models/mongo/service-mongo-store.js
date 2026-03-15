@@ -1,15 +1,13 @@
 import { Service } from "./service.js";
 
-
 export const serviceMongoStore = {
   async getAllServices() {
-    return Service.find().lean()
+    return Service.find().lean();
   },
 
-   async getServicesBySalonId(id) {
+  async getServicesBySalonId(id) {
     return Service.find({ salonid: id }).lean();
   },
-
 
   async addService(salonidOrService, service) {
     const serviceToSave = service
@@ -19,10 +17,9 @@ export const serviceMongoStore = {
     return newService.save();
   },
 
- 
   async getServiceById(id) {
-    if (id) return null;
-    try { 
+    if (!id) return null;
+    try {
       return await Service.findOne({ _id: id }).lean();
     } catch {
       return null;
@@ -33,7 +30,8 @@ export const serviceMongoStore = {
     try {
       await Service.deleteOne({ _id: id });
     } catch {
-    
+      // ignore bad ids
+    }
   },
 
   async deleteServiceById(id) {

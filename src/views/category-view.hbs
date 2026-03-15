@@ -1,20 +1,37 @@
 {{> menu}}
 
-<form class="box"  action="/track/{{playlist._id}}/updatetrack/{{track._id}}" method="POST">
-  <label>Update Track Details:</label>
-  <div class="field is-horizontal">
-    <div class="field-body">
-      <div class="field">
-        <input class="input" type="text" name="title", value="{{track.title}}">
-      </div>
-      <div class="field">
-        <input class="input" type="text" name="artist" value="{{track.artist}}">
-      </div>
-      <div class="field">
-        <input class="input" type="text"  name="duration" value="{{track.duration}}">
-      </div>
-    </div>
-  </div>
-  <button class="button is-primary">Update Track</button>
-</form>
+<section class="section">
 
+  <div class="container">
+
+    <h1 class="title">💅 {{category.title}} Salons</h1>
+
+    <div class="columns is-multiline">
+
+      {{#each salons}}
+
+      <div class="column is-one-third">
+
+        <div class="box">
+
+          <h3 class="title is-5">{{name}}</h3>
+
+          <p><strong>Area:</strong> {{area}}</p>
+          <p><strong>Address:</strong> {{address}}</p>
+          <p><strong>Services:</strong> {{services}}</p>
+
+          <a href="/salon/{{_id}}" class="button is-small is-primary mt-2">
+            View Salon
+          </a>
+
+        </div>
+
+      </div>
+
+      {{/each}}
+
+    </div>
+
+  </div>
+
+</section>
