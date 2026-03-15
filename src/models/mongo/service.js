@@ -3,13 +3,12 @@ import Mongoose from "mongoose";
 const { Schema } = Mongoose;
 
 const trackSchema = new Schema({
-  title: String,
-  artist: String,
-  duration: Number,
-  playlistid: {
+  salonid: {
     type: Schema.Types.ObjectId,
-    ref: "Playlist",
+    ref: "Salon",
   },
+  title: String,
+  category: String,
 });
 
-export const Track = Mongoose.model("Track", trackSchema);
+export const Track = Mongoose.model("Service", serviceSchema);

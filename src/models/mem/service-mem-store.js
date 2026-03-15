@@ -1,47 +1,55 @@
 import { v4 } from "uuid";
 
-let tracks = [];
+let services= [];
 
-export const trackMemStore = {
-  async getAllTracks() {
-    return tracks;
+export const servicesMemStore = {
+  async getAllServices() {
+    return services;
   },
 
-  async addTrack(playlistId, track) {
-    track._id = v4();
-    track.playlistid = playlistId;
-    tracks.push(track);
-    return track;
+  async addService(salonidOrService, service) {
+   const serviceToSave = service
+      ? { ...service, salonid: salonidOrService }
+      : { ...salonidOrService };
+    serviceToSave._id = v4();
+    services.push(serviceToSave);
+    return serviceToSave;
   },
 
-  async getTracksByPlaylistId(id) {
-    return tracks.filter((track) => track.playlistid === id);
+  async getServicesBySalonId(id) {
+    return services.filter((service) => service.salonid === id);
   },
 
-  async getTrackById(id) {
-    let track = tracks.find((track) => track._id === id);
-    if (track == undefined) {
-      track = null;
-    }
-    return track;
+  async getServiceById(id) {
+    return services.find((service) => service._id === id) || null;
   },
 
-  async getPlaylistTracks(playlistId) {
-    return tracks.filter((track) => track.playlistid === playlistId);
+  async getServicesBySalonId(salonId) {
+    return services.filter((service) => service.salonid === salonId);
   },
 
-  async deleteTrack(id) {
-    const index = tracks.findIndex((track) => track._id === id);
-    if (index !== -1) tracks.splice(index, 1);
+  async deleteService(id) {
+     const index = services.findIndex((service) => service._id === id);
+    if (index !== -1) services.splice(index, 1);
   },
 
-  async deleteAllTracks() {
-    tracks = [];
+  async deleteServiceById() {
+     return this.deleteService(id);
   },
 
-  async updateTrack(track, updatedTrack) {
-    track.title = updatedTrack.title;
-    track.artist = updatedTrack.artist;
-    track.duration = updatedTrack.duration;
+async deleteServicesBySalonId(id) {
+    services = services.filter((service) => service.salonid !== id);
+  }
+
+async deleteAllServices() {
+    services = [];
+  },
+
+
+  async updateService(service, updatedService) {
+    service.title = updatedService.title;
+    service.category = updatedService.category;
+    service.price = updatedService.duration;
+    return service;
   },
 };

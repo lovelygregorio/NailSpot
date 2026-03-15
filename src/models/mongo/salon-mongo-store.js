@@ -1,43 +1,66 @@
-import { Playlist } from "./salon.js";
-import { trackMongoStore } from "./service-mongo-store.js";
+import { Salon } from "./salon.js";
+import { serviceMongoStore } from "./service-mongo-store.js";
 
-export const playlistMongoStore = {
-  async getAllPlaylists() {
-    const playlists = await Playlist.find().lean();
-    return playlists;
+export const salonMongoStore = {
+  async getAllSalons() {
+    return Salon.find().lean();
+  },
+  
+  async getUserSalons(userid) {
+    return Salon.find({ userid }).lean();
   },
 
-  async getPlaylistById(id) {
-    if (id) {
-      const playlist = await Playlist.findOne({ _id: id }).lean();
-      if (playlist) {
-        playlist.tracks = await trackMongoStore.getTracksByPlaylistId(playlist._id);
-      }
-      return playlist;
-    }
+  async addSalon(salon) {
+    const newSalon = new Salon(salon);
+    const salonObj = await newSalon.save();
+    return this.getSalonById(salonObj._id);
+  },
+
+
+   async getSalonsByCategoryId(categoryid) {
+    return Salon.find({ categoryid }).lean();
+  },
+
+  async getSalonById(id) {
+    if (!id) return null;
+      try { 
+      const salon = await Salon.findOne({ _id: id }).lean();
+      if (!salon) { return null;
+        return { ...salon, services = await serviceMongoStore.getServicesBySalonId(salon._id), };
+      } catch {
     return null;
   },
+}
 
-  async addPlaylist(playlist) {
-    const newPlaylist = new Playlist(playlist);
-    const playlistObj = await newPlaylist.save();
-    return this.getPlaylistById(playlistObj._id);
+   async updateSalon(salonOrId, updatedSalon) {
+    const id = typeof salonOrId === "object" ? salonOrId._id : salonOrId;
+    const salon = await Salon.findOne({ _id: id });
+    if (salon) {
+      salon.name = updatedSalon.name;
+      salon.area = updatedSalon.area;
+      salon.address = updatedSalon.address;
+      salon.services = updatedSalon.services;
+      salon.rating = updatedSalon.rating;
+      salon.notes = updatedSalon.notes;
+      salon.latitude = updatedSalon.latitude;
+      salon.longitude = updatedSalon.longitude;
+      salon.image = updatedSalon.image;
+      salon.categoryid = updatedSalon.categoryid;
+      salon.userid = updatedSalon.userid;
+      await salon.save();
+    }
+    return salon;
   },
 
-  async getUserPlaylists(id) {
-    const playlist = await Playlist.find({ userid: id }).lean();
-    return playlist;
-  },
-
-  async deletePlaylistById(id) {
+  async deleteSalonById(id) {
     try {
-      await Playlist.deleteOne({ _id: id });
+      await Salon.deleteOne({ _id: id });
     } catch (error) {
       console.log("bad id");
     }
   },
 
-  async deleteAllPlaylists() {
-    await Playlist.deleteMany({});
+  async deleteAllSalons() {
+    await Salon.deleteMany({});
   }
 };

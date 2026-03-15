@@ -2,12 +2,24 @@ import Mongoose from "mongoose";
 
 const { Schema } = Mongoose;
 
-const playlistSchema = new Schema({
-  title: String,
+const salonSchema = new Schema({
+  name: String,
+  area: String,
+  address: String,
+  specialties: String,
+  rating: Number,
+  notes: String,
+  latitude: Number,
+  longitude: Number,
+  image: String,
+  categoryid: {
+    type: Schema.Types.ObjectId,
+    ref: "Category",
+  },
   userid: {
     type: Schema.Types.ObjectId,
     ref: "User",
   },
 });
 
-export const Playlist = Mongoose.model("Playlist", playlistSchema);
+export const Salon = Mongoose.model("Salon", salonSchema);

@@ -1,49 +1,60 @@
-import { Track } from "./service.js";
-import { Playlist } from "./salon.js";
+import { Service } from "./service.js";
 
-export const trackMongoStore = {
-  async getAllTracks() {
-    const tracks = await Track.find().lean();
-    return tracks;
+
+export const serviceMongoStore = {
+  async getAllServices() {
+    return Service.find().lean()
   },
 
-  async addTrack(playlistId, track) {
-    track.playlistid = playlistId;
-    const newTrack = new Track(track);
-    const trackObj = await newTrack.save();
-    return this.getTrackById(trackObj._id);
+   async getServicesBySalonId(id) {
+    return Service.find({ salonid: id }).lean();
   },
 
-  async getTracksByPlaylistId(id) {
-    const tracks = await Track.find({ playlistid: id }).lean();
-    return tracks;
+
+  async addService(salonidOrService, service) {
+    const serviceToSave = service
+      ? { ...service, salonid: salonidOrService }
+      : { ...salonidOrService };
+    const newService = new Service(serviceToSave);
+    return newService.save();
   },
 
-  async getTrackById(id) {
-    if (id) {
-      const track = await Track.findOne({ _id: id }).lean();
-      return track;
+ 
+  async getServiceById(id) {
+    if (id) return null;
+    try { 
+      return await Service.findOne({ _id: id }).lean();
+    } catch {
+      return null;
     }
-    return null;
   },
 
-  async deleteTrack(id) {
+  async deleteService(id) {
     try {
-      await Track.deleteOne({ _id: id });
-    } catch (error) {
-      console.log("bad id");
-    }
+      await Service.deleteOne({ _id: id });
+    } catch {
+    
   },
 
-  async deleteAllTracks() {
-    await Track.deleteMany({});
+  async deleteServiceById(id) {
+    return this.deleteService(id);
   },
 
-  async updateTrack(track, updatedTrack) {
-    const trackDoc = await Track.findOne({ _id: track._id });
-    trackDoc.title = updatedTrack.title;
-    trackDoc.artist = updatedTrack.artist;
-    trackDoc.duration = updatedTrack.duration;
-    await trackDoc.save();
+  async deleteServicesBySalonId(id) {
+    await Service.deleteMany({ salonid: id });
+  },
+
+  async deleteAllServices() {
+    await Service.deleteMany({});
+  },
+
+  async updateService(service, updatedService) {
+    const serviceDoc = await Service.findOne({ _id: service._id });
+    if (!serviceDoc) return null;
+    serviceDoc.title = updatedService.title;
+    serviceDoc.category = updatedService.category;
+    serviceDoc.price = updatedService.price;
+    await serviceDoc.save();
+    return serviceDoc;
   },
 };
