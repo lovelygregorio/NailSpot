@@ -1,38 +1,57 @@
 import { v4 } from "uuid";
 import { trackMemStore } from "./service-mem-store.js";
 
-let playlists = [];
+let salon = [];
 
-export const playlistMemStore = {
-  async getAllPlaylists() {
-    return playlists;
+export const salonMemStore = {
+  async getAllSalons() {
+    return salon;
   },
 
-  async addPlaylist(playlist) {
-    playlist._id = v4();
-    playlists.push(playlist);
-    return playlist;
+  async addSalon(salon) {
+    salon._id = v4();
+    salon.push(salon);
+    return salon;
   },
 
-  async getPlaylistById(id) {
-    const list = playlists.find((playlist) => playlist._id === id);
-    if (list) {
-      list.tracks = await trackMemStore.getTracksByPlaylistId(list._id);
-      return list;
-    }
-    return null;
+  async getSalonById(id) {
+    const list = salon.find((item) => item._id === id);
+     if (!salon) return null;
+    return { ...salon, services: await serviceMemStore.getServicesBySalonId(salon._id) };
   },
 
-  async getUserPlaylists(userid) {
-    return playlists.filter((playlist) => playlist.userid === userid);
+   async getSalonsByCategoryId(categoryid) {
+    return salons.filter((salon) => salon.categoryid === categoryid);
   },
 
-  async deletePlaylistById(id) {
-    const index = playlists.findIndex((playlist) => playlist._id === id);
-    if (index !== -1) playlists.splice(index, 1);
+  async getUserSalons(userid) {
+    return salon.filter((salon) => salon.userid === userid);
   },
 
-  async deleteAllPlaylists() {
-    playlists = [];
+   async updateSalon(salonOrId, updatedSalon) {
+    const id = typeof salonOrId === "object" ? salonOrId._id : salonOrId;
+    const salon = salons.find((item) => item._id === id);
+    if (!salon) return null;
+    salon.name = updatedSalon.name;
+    salon.area = updatedSalon.area;
+    salon.address = updatedSalon.address;
+    salon.services = updatedSalon.services;
+    salon.rating = updatedSalon.rating;
+    salon.notes = updatedSalon.notes;
+    salon.latitude = updatedSalon.latitude;
+    salon.longitude = updatedSalon.longitude;
+    salon.categoryid = updatedSalon.categoryid;
+    salon.userid = updatedSalon.userid;
+    return salon;
+  },
+
+
+  async deleteSalonById(id) {
+    const index = salon.findIndex((salon) => salon._id === id);
+    if (index !== -1) salon.splice(index, 1);
+  },
+
+  async deleteAllSalons() {
+    salon = [];
   },
 };

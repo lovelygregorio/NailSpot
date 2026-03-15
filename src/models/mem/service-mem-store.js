@@ -24,10 +24,7 @@ export const servicesMemStore = {
     return services.find((service) => service._id === id) || null;
   },
 
-  async getServicesBySalonId(salonId) {
-    return services.filter((service) => service.salonid === salonId);
-  },
-
+  
   async deleteService(id) {
      const index = services.findIndex((service) => service._id === id);
     if (index !== -1) services.splice(index, 1);

@@ -1,74 +1,64 @@
 export const serviceUrl = "http://localhost:3000";
 
-export const maggie = {
-  firstName: "Maggie",
-  lastName: "Simpson",
-  email: "maggie@simpson.com",
-  password: "secret"
+export const testUser = {
+  firstName: "Lovely",
+  lastName: "Gregorio",
+  email: "lovely.api.2026@test.com",
+  password: "secret123",
 };
 
-export const testUsers = [
+export const testSalon = {
+  name: "Gloss Studio Dublin",
+  area: "Ranelagh",
+  address: "Main Street, Ranelagh, Dublin",
+  specialties: "Acrylic, BIAB",
+  rating: 5,
+  notes: "Popular BIAB salon",
+  latitude: 53.3243,
+  longitude: -6.2571,
+};
+
+export const testSalons = [
   {
-    firstName: "Homer",
-    lastName: "Simpson",
-    email: "homer@simpson.com",
-    password: "secret"
+    name: "Gloss Studio Dublin",
+    area: "Ranelagh",
+    address: "Main Street, Ranelagh, Dublin",
+    specialties: "BIAB, Gel",
+    rating: 5,
+    notes: "Popular BIAB salon",
+    latitude: 53.3243,
+    longitude: -6.2571,
   },
   {
-    firstName: "Marge",
-    lastName: "Simpson",
-    email: "marge@simpson.com",
-    password: "secret"
+    name: "Luxe Nails",
+    area: "Dublin 2",
+    address: "Grafton Street, Dublin",
+    specialties: "Gel, Manicure",
+    rating: 4,
+    notes: "Late evening appointments",
+    latitude: 53.3419,
+    longitude: -6.2591,
   },
   {
-    firstName: "Bart",
-    lastName: "Simpson",
-    email: "bart@simpson.com",
-    password: "secret"
+    name: "Pink Tips",
+    area: "Phibsborough",
+    address: "North Circular Road, Dublin",
+    specialties: "Nail Art, Acrylic",
+    rating: 4,
+    notes: "Great nail art",
+    latitude: 53.3606,
+    longitude: -6.2764,
   }
 ];
 
-export const mozart = {
-  title: "Mozart Favourites"
+export const testService = {
+  title: "BIAB Overlay",
+  category: "BIAB",
+  price: 45
 };
 
-export const concerto = {
-  "title": "Violin Concerto No. 3",
-  "artist": "Mozart",
-  "duration": 15
-};
-
-
-export const beethoven = {
-  title: "Mozart Favourites"
-};
-
-export const testPlaylists = [
-  {
-    title: "Beethoven Sonatas"
-  },
-  {
-    title: "Beethoven Concertos"
-  },
-  {
-    title: "Beethoven Symphonies"
-  }
-];
-
-export const testTracks = [
-  {
-    "title": "Piano Sonata No. 3",
-    "artist": "Beethoven",
-    "duration": 5
-  },
-  {
-    "title": "Piano Sonata No. 7",
-    "artist": "Beethoven",
-    "duration": 6
-  },
-  {
-    "title": "Piano Sonata No. 10",
-    "artist": "Beethoven",
-    "duration": 4
-  }
+export const testServices = [
+  { title: "BIAB Overlay", category: "BIAB", price: 45 },
+  { title: "Gel Manicure", category: "Gel", price: 35 },
+  { title: "Nail Art", category: "Art", price: 20 }
 ];
