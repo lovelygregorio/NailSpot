@@ -1,9 +1,4 @@
 NAILSPOT DUBLIN
-
-Lovely Gregorio 
-Higher Diploma in Computer Science
-South East Technological University (SETU)
-
 EC2 Amazon Deployment : http://54.226.54.235:3000
 https://github.com/lovelygregorio/nailspot.git
 
@@ -80,6 +75,3 @@ The test suite includes:
 • Service API tests
 • User API tests
 • Model tests for Salon, Service, and User
-
-
-

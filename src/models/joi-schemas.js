@@ -26,7 +26,7 @@ export const SalonSpec = Joi.object({
   name: Joi.string().required(),
   area: Joi.string().required(),
   address: Joi.string().required(),
-  specialties: Joi.string().allow("").optional(),
+  services: Joi.string().allow("").optional(),
   rating: Joi.number().min(1).max(5).optional(),
   notes: Joi.string().allow("").optional(),
   latitude: Joi.number().min(-90).max(90).optional(),

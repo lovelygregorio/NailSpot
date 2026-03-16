@@ -50,8 +50,6 @@ export const accountsController = {
     },
   },
 
-
-
   login: {
     auth: false,
     validate: {
@@ -105,11 +103,6 @@ export const accountsController = {
       });
     },
   },
-
-
-
-
-
 
   updateAccount: {
     validate: {

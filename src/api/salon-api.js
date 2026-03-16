@@ -18,7 +18,7 @@ export const salonApi = {
         name: salon.name,
         area: salon.area,
         address: salon.address,
-        specialties: salon.specialties,
+        services: salon.services,
         rating: salon.rating,
         notes: salon.notes,
         latitude: salon.latitude,
@@ -50,7 +50,7 @@ export const salonApi = {
         name: salon.name,
         area: salon.area,
         address: salon.address,
-        specialties: salon.specialties,
+        services: salon.services,
         rating: salon.rating,
         notes: salon.notes,
         latitude: salon.latitude,
@@ -69,7 +69,7 @@ export const salonApi = {
       payload: SalonSpec,
       failAction: validationError,
     },
-    response: { schema: SalonSpecPlus.unknown(true), failAction: validationError },
+   response: { failAction: validationError },
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
       const userid = request.payload.userid || loggedInUser._id || loggedInUser.userId;
@@ -83,11 +83,11 @@ export const salonApi = {
 
       return h.response({
         _id: salon._id.toString(),
-        userid: salon.userid ? salon.userid.toString() : userid.toString(),
+        userid: salon.userid ? salon.userid.toString() : undefined,
         name: salon.name,
         area: salon.area,
         address: salon.address,
-        specialties: salon.specialties,
+        services: salon.services,
         rating: salon.rating,
         notes: salon.notes,
         latitude: salon.latitude,

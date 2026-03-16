@@ -3,7 +3,7 @@ import { db } from "../models/db.js";
 export const salonController = {
   index: {
     handler: async function (request, h) {
-      const loggedInUser = await db.salonStore.getSalonById(request.params.id);
+      const loggedInUser = request.auth.credentials;
       const salon = await db.salonStore.getSalonById(request.params.id);
 
       if (!salon) {
@@ -17,7 +17,7 @@ export const salonController = {
       return h.view("salon-view", {
         title: "Salon Details",
         salon,
-    });
+      });
     },
   },
 
@@ -26,7 +26,7 @@ export const salonController = {
       const loggedInUser = request.auth.credentials;
       const category = await db.categoryStore.getCategoryById(request.params.id);
 
-       if (!category) {
+      if (!category) {
         return h.redirect("/categories");
       }
 
@@ -45,14 +45,14 @@ export const salonController = {
         longitude: Number(request.payload.longitude || -6.2603),
         categoryid: category._id,
         userid: loggedInUser._id,
-      
       };
-      await db.salonStore.updateSalon(salon, updatedSalon);
-      return h.redirect(`/salon/${request.params.id}`);
+
+      await db.salonStore.addSalon(newSalon);
+      return h.redirect(`/categories/${request.params.id}`);
     },
   },
 
- updateSalon: {
+  updateSalon: {
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
       const salon = await db.salonStore.getSalonById(request.params.id);

@@ -6,7 +6,7 @@ const salonSchema = new Schema({
   name: String,
   area: String,
   address: String,
-  specialties: String,
+  services: String,
   rating: Number,
   notes: String,
   latitude: Number,
@@ -15,6 +15,7 @@ const salonSchema = new Schema({
   categoryid: {
     type: Schema.Types.ObjectId,
     ref: "Category",
+    required: false,
   },
   userid: {
     type: Schema.Types.ObjectId,

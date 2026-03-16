@@ -20,19 +20,16 @@ export const salonMongoStore = {
     return this.getSalonById(salonObj._id);
   },
 
-  async getSalonById(id) {
-    if (!id) return null;
-    try {
-      const salon = await Salon.findOne({ _id: id }).lean();
-      if (!salon) return null;
-      return {
-        ...salon,
-        services: await serviceMongoStore.getServicesBySalonId(salon._id),
-      };
-    } catch {
-      return null;
-    }
-  },
+ async getSalonById(id) {
+  if (!id) return null;
+  try {
+    const salon = await Salon.findOne({ _id: id }).lean();
+    if (!salon) return null;
+    return salon;
+  } catch {
+    return null;
+  }
+},
 
   async updateSalon(salonOrId, updatedSalon) {
     const id = typeof salonOrId === "object" ? salonOrId._id : salonOrId;
