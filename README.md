@@ -3,6 +3,9 @@ NailSpot Dublin
 Live Application (AWS EC2 Deployment)
 http://54.87.68.184:3000 
 
+Backup Deployment (Render)
+https://nailspotservice.onrender.com
+
 GitHub Repository
 https://github.com/lovelygregorio/nailspot.git
 
@@ -81,9 +84,16 @@ The test suite includes:
 • User API tests
 • Model tests for Salon, Service, and User
 
-AWS EC2 Deployment
+AWS EC2 Deployment  
 
-The NailSpot Dublin application is deployed on Amazon Web Services (AWS) EC2, allowing the application to run on a cloud server and be accessed online.
+The NailSpot Dublin application is deployed on Amazon Web Services (AWS) EC2, allowing the application to run on a cloud server and be accessed online.  
 
-An AWS Elastic IP address was allocated and associated with the EC2 instance to ensure the public IP address remains permanent and does not change after instance restarts.
+An AWS Elastic IP address was allocated and associated with the EC2 instance to ensure the public IP address remains permanent and does not change after instance restarts.  
 
+Render Deployment (Backup)
+
+Due to permission and configuration issues encountered during the EC2 setup, the application was also deployed on Render as a backup hosting solution.  
+
+This ensures continuous availability of the application and demonstrates the ability to deploy across multiple cloud platforms.  
+
+MARCH 2026
