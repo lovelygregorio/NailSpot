@@ -1,19 +1,41 @@
+<!--
+  Dashboard Page
+
+  Main user dashboard.
+  Allows users to:
+  - Add new salons
+  - View salons on a map (Leaflet)
+  - Load demo data
+  - See list of saved salons
+-->
+
 {{> menu}}
 <section class="section">
   <div class="container">
+
+    <!-- Dashboard Header -->
     <div class="level">
       <div class="level-left">
         <div>
+
+<!--  Dashboard Title and Subtitle
+  Provides a welcoming introduction to the dashboard, highlighting its purpose and key features.  -->
+
           <h1 class="title">Salon Dashboard</h1>
           <p class="subtitle">Save and explore nail salons in Dublin.</p>
         </div>
       </div>
+
+      <!-- Load Demo Data Button -->
       <div class="level-right">
         <a class="button is-link is-light" href="/dashboard/load-demo">Load Dublin Demo Salons</a>
       </div>
     </div>
+    <!-- Error Message Partial -->
     {{> error}}
     <div class="columns">
+
+      <!-- Add Salon Form Partial -->
       <div class="column is-5">
         {{> add-salon}}
       </div>
@@ -24,34 +46,40 @@
         </div>
       </div>
     </div>
+
+    <!-- Saved Salons List Partial -->
     {{> list-salons}}
   </div>
 </section>
 
+<!-- Leaflet Map Script -->
+
 <script>
   const salons = {{{salonsJson}}} || [];
 
-  const map = L.map("dashboard-map").setView([53.3498, -6.2603], 12);
+  const map = L.map("dashboard-map").setView([53.3498, -6.2603], 12); // Center on Dublin
 
+// Add OpenStreetMap tiles
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
-
+// Add markers for each salon
   if (salons.length > 0) {
     const bounds = [];
 
+// Loop through salons and add markers
     salons.forEach((salon) => {
       const lat = Number(salon.latitude || 53.3498);
       const lng = Number(salon.longitude || -6.2603);
 
       bounds.push([lat, lng]);
 
-      L.marker([lat, lng]).addTo(map)
+      L.marker([lat, lng]).addTo(map) //  Use lat/lng from salon data, fallback to Dublin center
         .bindPopup(`<strong>${salon.name}</strong><br>${salon.area}<br>${salon.address}`);
     });
-
-    map.fitBounds(bounds, { padding: [20, 20] });
+// Fit map to markers
+    map.fitBounds(bounds, { padding: [20, 20] }); // Add padding to avoid markers being too close to edges
   } else {
     L.marker([53.3498, -6.2603]).addTo(map)
       .bindPopup("Dublin City Centre")

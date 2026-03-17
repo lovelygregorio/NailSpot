@@ -1,7 +1,17 @@
+/**
+ * Accounts Controller
+ *
+ * Handles user account functionality including signup, login, logout,
+ * and account management. Uses Joi validation and cookie-based authentication.
+ */
+
 import { UserSpec, UserCredentialsSpec } from "../models/joi-schemas.js";
 import { db } from "../models/db.js";
 
+// Controller object containing all account-related handlers
 export const accountsController = {
+  
+  // Render the home page
   index: {
     auth: false,
     handler: function (request, h) {
@@ -9,6 +19,7 @@ export const accountsController = {
     },
   },
 
+  // Render the signup page
   showSignup: {
     auth: false,
     handler: function (request, h) {
@@ -16,11 +27,14 @@ export const accountsController = {
     },
   },
 
+  // Handle user signup
   signup: {
     auth: false,
     validate: {
       payload: UserSpec,
       options: { abortEarly: false },
+      
+      // If validation fails, re-render the signup page with error messages
       failAction: function (request, h, error) {
         return h.view("signup-view", {
           title: "Sign up error",
@@ -28,33 +42,42 @@ export const accountsController = {
         }).takeover().code(400);
       },
     },
+
+    // Handler function to process the signup form submission
     handler: async function (request, h) {
       const existingUser = await db.userStore.getUserByEmail(request.payload.email);
 
+      // If a user with the same email already exists, return an error
       if (existingUser) {
         return h.view("signup-view", {
           title: "Sign up error",
           errors: [{ message: "Email already registered" }],
         }).takeover().code(400);
       }
-
+       
+      // Create a new user in the database and redirect to the login page
       await db.userStore.addUser(request.payload);
       return h.redirect("/login");
     },
   },
 
+  // Render the login page
   showLogin: {
-    auth: false,
+    auth: false, // Allow access to the login page without authentication
     handler: function (request, h) {
       return h.view("login-view", { title: "Login to NailSpot Dublin" });
     },
   },
 
+
+  // Handle user login
   login: {
     auth: false,
     validate: {
       payload: UserCredentialsSpec,
       options: { abortEarly: false },
+      
+      // If validation fails, re-render the login page with error messages
       failAction: function (request, h, error) {
         return h.view("login-view", {
           title: "Login error",
@@ -62,9 +85,11 @@ export const accountsController = {
         }).takeover().code(400);
       },
     },
+
     handler: async function (request, h) {
       const user = await db.userStore.getUserByEmail(request.payload.email);
 
+      // If no user is found with the given email or if the password does not match, return an error
       if (!user || user.password !== request.payload.password) {
         return h.view("login-view", {
           title: "Login failed",
@@ -72,6 +97,7 @@ export const accountsController = {
         }).takeover().code(401);
       }
 
+      // Set the user credentials in the cookie for authentication and redirect to the dashboard
       request.cookieAuth.set({
         _id: user._id.toString(),
         email: user.email,
@@ -81,6 +107,7 @@ export const accountsController = {
     },
   },
 
+  // Handle user logout
   logout: {
     handler: function (request, h) {
       request.cookieAuth.clear();
@@ -88,15 +115,18 @@ export const accountsController = {
     },
   },
 
+  // Render the account settings page
   showAccount: {
     handler: async function (request, h) {
       const loggedInUser = await db.userStore.getUserById(request.auth.credentials._id);
 
+      // If no user is found in the database, clear the authentication cookie and redirect to the login page
       if (!loggedInUser) {
         request.cookieAuth.clear();
         return h.redirect("/login");
       }
 
+      // Render the account settings view with the logged-in user's information
       return h.view("account-view", {
         title: "Account Settings",
         user: loggedInUser,
@@ -104,10 +134,13 @@ export const accountsController = {
     },
   },
 
+  // Handle account updates
   updateAccount: {
     validate: {
       payload: UserSpec,
       options: { abortEarly: false },
+      
+      // If validation fails, re-render the account settings page with error messages
       failAction: async function (request, h, error) {
         const loggedInUser = await db.userStore.getUserById(request.auth.credentials._id);
 
@@ -118,6 +151,7 @@ export const accountsController = {
         }).takeover().code(400);
       },
     },
+
     handler: async function (request, h) {
       const loggedInUser = await db.userStore.getUserById(request.auth.credentials._id);
 
@@ -126,6 +160,7 @@ export const accountsController = {
         return h.redirect("/login");
       }
 
+      // Update the user's account information in the database
       const updatedUser = {
         firstName: request.payload.firstName,
         lastName: request.payload.lastName,
@@ -133,10 +168,12 @@ export const accountsController = {
         password: request.payload.password,
       };
 
+      // Update the user in the database and refresh the authentication cookie with the new information
       await db.userStore.updateUser(loggedInUser._id, updatedUser);
 
       const refreshedUser = await db.userStore.getUserById(loggedInUser._id);
 
+      // Update the authentication cookie with the refreshed user information
       request.cookieAuth.set({
         _id: refreshedUser._id.toString(),
         email: refreshedUser.email,
@@ -146,20 +183,24 @@ export const accountsController = {
     },
   },
 
+  // Validate the user's session for authentication
   validate: async function (request, session) {
     if (!session || !session._id) {
       return { isValid: false };
     }
 
-    const user = await db.userStore.getUserById(session._id);
+    // Retrieve the user from the database using the session ID
+    const user = await db.userStore.getUserById(session._id); 
 
+    // If no user is found, the session is invalid
     if (!user) {
       return { isValid: false };
     }
 
+    // If a user is found, the session is valid and return the user credentials
     return {
       isValid: true,
-      credentials: user,
+      credentials: user, // Return the user object as credentials for use in authenticated routes
     };
   },
 };

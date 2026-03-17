@@ -1,17 +1,30 @@
+/**
+ * Salon API Controller
+ *
+ * Handles all API endpoints related to salons.
+ * Includes functionality to retrieve, create, and delete salons.
+ * Uses JWT authentication and Joi validation for security and data integrity.
+ */
+
 import Boom from "@hapi/boom";
 import { validationError } from "./logger.js";
 import { IdSpec, SalonSpec, SalonSpecPlus, SalonArraySpec } from "../models/joi-schemas.js";
 import { db } from "../models/db.js";
 
 export const salonApi = {
+
+  // Get all salons
   find: {
     auth: "jwt",
     tags: ["api"],
     description: "Get all salons",
     notes: "Returns all salons",
     response: { schema: SalonArraySpec, failAction: validationError },
+
     handler: async function () {
       const salons = await db.salonStore.getAllSalons();
+
+      // Convert MongoDB ObjectIds to strings for API response
       return salons.map((salon) => ({
         _id: salon._id.toString(),
         userid: salon.userid ? salon.userid.toString() : undefined,
@@ -28,6 +41,8 @@ export const salonApi = {
     },
   },
 
+
+  // Get a single salon by ID
   findOne: {
     auth: "jwt",
     tags: ["api"],
@@ -38,8 +53,11 @@ export const salonApi = {
       failAction: validationError,
     },
     response: { schema: SalonSpecPlus.unknown(true), failAction: validationError },
+
     handler: async function (request) {
       const salon = await db.salonStore.getSalonById(request.params.id);
+
+      // If no salon is found with the given ID, return a 404 Not Found error
       if (!salon) {
         return Boom.notFound("No salon with this id");
       }
@@ -60,16 +78,21 @@ export const salonApi = {
     },
   },
 
+
+  // Create a new salon
   create: {
     auth: "jwt",
     tags: ["api"],
     description: "Create a salon",
     notes: "Returns the newly created salon",
+
     validate: {
       payload: SalonSpec,
       failAction: validationError,
     },
+
    response: { failAction: validationError },
+
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
       const userid = request.payload.userid || loggedInUser._id || loggedInUser.userId;
@@ -93,10 +116,11 @@ export const salonApi = {
         latitude: salon.latitude,
         longitude: salon.longitude,
         image: salon.image,
-      }).code(201);
+      }).code(201); // Return 201 Created status code for successful creation
     },
   },
 
+  // Delete a salon by ID
   deleteOne: {
     auth: "jwt",
     tags: ["api"],
@@ -106,26 +130,41 @@ export const salonApi = {
       params: { id: IdSpec },
       failAction: validationError,
     },
+
     handler: async function (request) {
       const salon = await db.salonStore.getSalonById(request.params.id);
+
+      // If no salon is found with the given ID, return a 404 Not Found error
       if (!salon) {
         return Boom.notFound("No salon with this id");
       }
+
+      // Delete all services associated with the salon before deleting the salon itself
       await db.serviceStore.deleteServicesBySalonId(request.params.id);
+
+      // Now delete the salon
       await db.salonStore.deleteSalonById(request.params.id);
-      return { success: true };
-    },
+      return { success: true }; // Return a success response after deletion
+    },      
   },
 
+
+  // Delete all salons (for testing purposes) 
   deleteAll: {
     auth: "jwt",
     tags: ["api"],
     description: "Delete all salons",
     notes: "Removes all salons from the database",
+
+    
     handler: async function () {
+     
+     // First delete all services to avoid orphaned service records, then delete all salons
       await db.serviceStore.deleteAllServices();
+
+      // Now delete all salons
       await db.salonStore.deleteAllSalons();
-      return { success: true };
+      return { success: true }; // Return a success response after deletion
     },
   },
 };

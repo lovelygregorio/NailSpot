@@ -1,5 +1,16 @@
+<!--
+  Add Salon Form
+
+  This form allows users to add a new nail salon.
+  Data is submitted to the /dashboard/addsalon route.
+-->
 <div class="box pink-card">
   <h2 class="title is-4">Add Nail Salon</h2>
+
+<!-- The form uses Bulma classes for styling and includes
+ fields for all necessary salon information.
+The category dropdown is dynamically populated using Handlebars to
+ iterate over the categories passed from the server. -->
 
   <form action="/dashboard/addsalon" method="POST">
     <div class="field">
@@ -9,6 +20,7 @@
       </div>
     </div>
 
+<!-- The area field is a dropdown with predefined options for different regions of Dublin. -->
     <div class="field">
       <label class="label">Area</label>
       <div class="control">
@@ -22,6 +34,11 @@
         </div>
       </div>
     </div>
+
+<!-- The category field is a dropdown that is dynamically 
+populated with categories from the database.
+Each category is rendered as an option with its unique identifier 
+as the value and its title as the display text. -->
 
     <div class="field">
       <label class="label">Category</label>
@@ -37,6 +54,8 @@
       </div>
     </div>
 
+<!-- The address, services, rating, notes, latitude, and longitude fields are
+ standard input fields for collecting the necessary information about the salon. --> 
     <div class="field">
       <label class="label">Address</label>
       <div class="control">

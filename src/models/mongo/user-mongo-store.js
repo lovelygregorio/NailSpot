@@ -1,15 +1,24 @@
+/**
+ * User Mongo Store
+ *
+ * MongoDB data store for users using Mongoose.
+ * Handles CRUD operations for user data.
+ */
 import { User } from "./user.js";
 
+// Exported object containing methods to interact with the user data in MongoDB
 export const userMongoStore = {
   async getAllUsers() {
     return await User.find().lean();
-
   },
+
+  // Add a new user to the MongoDB collection and return it with its assigned ID
    async addUser(user) {
     const newUser = new User(user);
     return await newUser.save();
   },
 
+  // Retrieve a specific user by their unique ID from the MongoDB collection
   async getUserById(id) {
     if (!id) return null;
     try {
@@ -19,13 +28,14 @@ export const userMongoStore = {
     }
   },
 
-
+// Retrieve a specific user by their email address from the MongoDB collection
   async getUserByEmail(email) {
      if (!email) return null;
     return await User.findOne({ email }).lean();
   },
 
-    async updateUser(id, updatedUser) {
+  // Update a specific user's details based on their unique ID
+  async updateUser(id, updatedUser) {
     try {
       const user = await User.findOne({ _id: id });
       if (user) {
@@ -40,6 +50,7 @@ export const userMongoStore = {
     }
   },
 
+  // Delete a specific user by their unique ID from the MongoDB collection
   async deleteUserById(id) {
     try {
       await User.deleteOne({ _id: id });
@@ -48,7 +59,8 @@ export const userMongoStore = {
     }
   },
 
-  async deleteAll() {
-    await User.deleteMany({});
+  // Delete all users from the MongoDB collection (used for testing or resetting data)
+ async deleteAll() {
+    await User.deleteMany({});// ignore bad ids
   }
 };

@@ -1,3 +1,11 @@
+<!--
+  Salon Details Page
+
+  Displays a selected salon, allows the user to update salon details,
+  view its location on a Leaflet map, add new services, and manage
+  existing services linked to that salon.
+-->
+{{> menu}}
 <section class="section">
   <div class="container">
     <div class="box">
@@ -84,8 +92,8 @@
     <div class="box">
       <h2 class="title is-5">Services</h2>
 
-      {{#if salon.services}}
-        {{#each salon.services}}
+      {{#if salon.servicesList}}
+        {{#each salon.servicesList}}
           <div class="media mb-4">
             <div class="media-content">
               <p><strong>{{title}}</strong></p>

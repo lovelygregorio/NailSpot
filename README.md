@@ -1,6 +1,11 @@
-NAILSPOT DUBLIN
-EC2 Amazon Deployment : http://54.226.54.235:3000
+NailSpot Dublin
+
+Live Application (AWS EC2 Deployment)
+http://54.87.68.184:3000 
+
+GitHub Repository
 https://github.com/lovelygregorio/nailspot.git
+
 
 ****************************
 
@@ -75,3 +80,10 @@ The test suite includes:
 • Service API tests
 • User API tests
 • Model tests for Salon, Service, and User
+
+AWS EC2 Deployment
+
+The NailSpot Dublin application is deployed on Amazon Web Services (AWS) EC2, allowing the application to run on a cloud server and be accessed online.
+
+An AWS Elastic IP address was allocated and associated with the EC2 instance to ensure the public IP address remains permanent and does not change after instance restarts.
+

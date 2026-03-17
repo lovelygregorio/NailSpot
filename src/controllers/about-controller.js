@@ -1,3 +1,10 @@
+/**
+ * About Controller
+ *
+ * Handles rendering of the About page.
+ * Displays information about the NailSpot Dublin application.
+ */
+
 export const aboutController = {
   index: {
     handler: function (request, h) {

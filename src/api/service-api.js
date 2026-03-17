@@ -1,17 +1,30 @@
+/**
+ * Service API Controller
+ *
+ * Handles all API endpoints related to salon services.
+ * Includes functionality to retrieve, create, and delete services.
+ * Uses JWT authentication and Joi validation for security and data integrity.
+ */
+
 import Boom from "@hapi/boom";
 import { validationError } from "./logger.js";
 import { IdSpec, ServiceSpec, ServiceSpecPlus, ServiceArraySpec } from "../models/joi-schemas.js";
 import { db } from "../models/db.js";
 
 export const serviceApi = {
+
+// Get all services 
   find: {
-    auth: "jwt",
-    tags: ["api"],
+    auth: "jwt", // Require JWT authentication for this endpoint
+    tags: ["api"],  // API documentation tag
     description: "Get all services",
     notes: "Returns all services",
-    response: { schema: ServiceArraySpec, failAction: validationError },
-    handler: async function () {
+    response: { schema: ServiceArraySpec, failAction: validationError }, // Validate response against Joi schema
+
+    handler: async function () { // Handler function to process the request
       const services = await db.serviceStore.getAllServices();
+      
+      // Convert MongoDB ObjectIds to strings for API response
       return services.map((service) => ({
         _id: service._id.toString(),
         salonid: service.salonid ? service.salonid.toString() : undefined,
@@ -22,6 +35,8 @@ export const serviceApi = {
     },
   },
 
+
+  // Get a single service by ID
   findOne: {
     auth: "jwt",
     tags: ["api"],
@@ -29,8 +44,11 @@ export const serviceApi = {
     notes: "Returns a service by id",
     validate: { params: { id: IdSpec }, failAction: validationError },
     response: { schema: ServiceSpecPlus.unknown(true), failAction: validationError },
+
     handler: async function (request) {
       const service = await db.serviceStore.getServiceById(request.params.id);
+    
+      // If no service is found with the given ID, return a 404 Not Found error
       if (!service) return Boom.notFound("No service with this id");
 
       return {
@@ -43,6 +61,7 @@ export const serviceApi = {
     },
   },
 
+  // Create a new service for a specific salon
   create: {
     auth: "jwt",
     tags: ["api"],
@@ -54,10 +73,14 @@ export const serviceApi = {
       failAction: validationError,
     },
     response: { schema: ServiceSpecPlus.unknown(true), failAction: validationError },
+   
     handler: async function (request, h) {
       const salon = await db.salonStore.getSalonById(request.params.id);
+    
+      // If no salon is found with the given ID, return a 404 Not Found error
       if (!salon) return Boom.notFound("No salon with this id");
 
+      // Attach the salon ID to the new service data and create the service
       const serviceData = {
         ...request.payload,
         salonid: request.params.id,
@@ -75,6 +98,7 @@ export const serviceApi = {
     },
   },
 
+  // Delete a single service by ID
   deleteOne: {
     auth: "jwt",
     tags: ["api"],
@@ -89,6 +113,7 @@ export const serviceApi = {
     },
   },
 
+  // Delete all services
   deleteAll: {
     auth: "jwt",
     tags: ["api"],

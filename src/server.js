@@ -1,3 +1,10 @@
+/**
+ * Server Configuration
+ *
+ * Sets up and starts the Hapi server.
+ * Registers plugins, configures views, authentication,
+ * database connection, and application routes.
+ */
 import Inert from "@hapi/inert";
 import Vision from "@hapi/vision";
 import Hapi from "@hapi/hapi";
@@ -19,8 +26,10 @@ import { validate } from "./api/jwt-utils.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Load environment variables from .env file
 dotenv.config();
 
+// Swagger configuration for API documentation
 const swaggerOptions = {
   info: {
     title: "NailSpot API",
@@ -28,15 +37,18 @@ const swaggerOptions = {
   },
 };
 
+// Initialize and configure the Hapi server
 export async function init() {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
-    host: "0.0.0.0",
+    host: "localhost",
   });
 
+  //  Register authentication plugins: Cookie for session management and JWT for token-based authentication
   await server.register(Cookie);
   await server.register(jwt);
 
+  // Register additional plugins: Inert for static file handling, Vision for view rendering, and HapiSwagger for API documentation
   await server.register([
     Inert,
     Vision,
@@ -45,6 +57,7 @@ export async function init() {
 
   server.validator(Joi);
 
+  // Configure Handlebars as the view engine for rendering HTML templates
   server.views({
     engines: {
       hbs: Handlebars,
@@ -53,10 +66,11 @@ export async function init() {
     path: "./views",
     layoutPath: "./views/layouts",
     partialsPath: "./views/partials",
-    layout: true,
+    layout:"layout",
     isCached: false,
   });
 
+  // Define authentication strategies
   server.auth.strategy("session", "cookie", {
     cookie: {
       name: process.env.cookie_name,
@@ -67,6 +81,7 @@ export async function init() {
     validate: accountsController.validate,
   });
 
+  // JWT strategy for API authentication
   server.auth.strategy("jwt", "jwt", {
     key: process.env.JWT_SECRET || process.env.cookie_password,
     validate,
@@ -75,6 +90,7 @@ export async function init() {
     },
   });
 
+  // Set the default authentication strategy to "session" for web routes
   server.auth.default("session");
 
   await db.init("mongo");
@@ -85,12 +101,14 @@ export async function init() {
   return server;
 }
 
+// Start the server and log the running URI
 async function start() {
   const server = await init();
   await server.start();
   console.log("Server running on", server.info.uri);
 }
 
+// Start the server if this file is run directly (not imported as a module)
 if (process.env.NODE_ENV !== "test") {
   start().catch((err) => {
     console.log(err);

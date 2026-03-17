@@ -1,6 +1,15 @@
+/**
+ * Dashboard Controller
+ *
+ * Handles dashboard-related functionality for the logged-in user.
+ * Includes displaying salons and categories, adding new salons,
+ * loading demo salon data, and deleting salons.
+ */
+
 import { SalonSpec } from "../models/joi-schemas.js";
 import { db } from "../models/db.js";
 
+// Sample salon data for Dublin to populate the dashboard with demo data
 const dublinDemoSalons = [
   {
     name: "Tropical Nails",
@@ -59,6 +68,7 @@ const dublinDemoSalons = [
   },
 ];
 
+// Helper function to build the dashboard view data for the logged-in user
 async function buildDashboardView(loggedInUser) {
   const salons = await db.salonStore.getUserSalons(loggedInUser._id);
   const categories = await db.categoryStore.getUserCategories(loggedInUser._id);
@@ -72,6 +82,7 @@ async function buildDashboardView(loggedInUser) {
   };
 }
 
+// Find an existing category or create it if it does not exist
 async function getOrCreateCategory(userid, title) {
   const categories = await db.categoryStore.getUserCategories(userid);
   let category = categories.find((c) => c.title === title);
@@ -86,7 +97,10 @@ async function getOrCreateCategory(userid, title) {
   return category;
 }
 
+// Controller object containing handlers for dashboard-related functionality
 export const dashboardController = {
+
+  // Handler function to display the dashboard view for the logged-in user
   index: {
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
@@ -95,10 +109,14 @@ export const dashboardController = {
     },
   },
 
+
+  // Handler function to add a new salon for the logged-in user
   addSalon: {
     validate: {
       payload: SalonSpec,
       options: { abortEarly: false },
+
+      //
       failAction: async function (request, h, error) {
         const loggedInUser = request.auth.credentials;
         const viewData = await buildDashboardView(loggedInUser);
@@ -110,6 +128,8 @@ export const dashboardController = {
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
 
+
+      // Build salon object from submitted form data
       const salonData = {
         name: request.payload.name,
         area: request.payload.area,
@@ -128,6 +148,7 @@ export const dashboardController = {
     },
   },
 
+  // Handler function to load demo salon data for the logged-in user
   loadDemoData: {
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
@@ -139,6 +160,7 @@ export const dashboardController = {
         );
 
         if (!alreadyExists) {
+          // Get or create the matching category for this demo salo
           // eslint-disable-next-line no-await-in-loop
           const category = await getOrCreateCategory(loggedInUser._id, salon.categoryTitle);
 
@@ -155,7 +177,8 @@ export const dashboardController = {
             userid: loggedInUser._id,
           };
 
-          // eslint-disable-next-line no-await-in-loop
+          
+          // add the salon to the database if it doesn't already exist for the user
           await db.salonStore.addSalon(salonData);
         }
       }
@@ -164,8 +187,11 @@ export const dashboardController = {
     },
   },
 
+  //delete a salon and its associated services from the database
   deleteSalon: {
     handler: async function (request, h) {
+
+      // Delete all services associated with the salon before deleting the salon itself
       await db.serviceStore.deleteServicesBySalonId(request.params.id);
       await db.salonStore.deleteSalonById(request.params.id);
       return h.redirect("/dashboard");

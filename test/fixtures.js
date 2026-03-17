@@ -1,5 +1,15 @@
+/**
+ * Test Fixtures
+ *
+ * Contains sample data used for API and model testing.
+ * Includes users, salons, and services for consistent test cases.
+ */
+
+// Base URL for API tests
 export const serviceUrl = "http://localhost:3000";
 
+
+// Sample user data for testing user-related functionality
 export const testUser = {
   firstName: "Lovely",
   lastName: "Gregorio",
@@ -7,6 +17,8 @@ export const testUser = {
   password: "secret123",
 };
 
+
+// Sample salon data for testing salon-related functionality
 export const testSalon = {
   name: "Gloss Studio Dublin",
   area: "Ranelagh",
@@ -18,6 +30,7 @@ export const testSalon = {
   longitude: -6.2571,
 };
 
+//  Multiple salons for bulk testing
 export const testSalons = [
   {
     name: "Gloss Studio Dublin",
@@ -51,12 +64,15 @@ export const testSalons = [
   }
 ];
 
+
+// service data for testing service-related functionality, including title, category, and price
 export const testService = {
   title: "BIAB Overlay",
   category: "BIAB",
   price: 45
 };
 
+// Multiple salons for bulk testing
 export const testServices = [
   { title: "BIAB Overlay", category: "BIAB", price: 45 },
   { title: "Gel Manicure", category: "Gel", price: 35 },
