@@ -41,7 +41,7 @@ const swaggerOptions = {
 export async function init() {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
-    host: "localhost",
+    host: "0.0.0.0",
   });
 
   //  Register authentication plugins: Cookie for session management and JWT for token-based authentication
@@ -101,7 +101,7 @@ export async function init() {
   return server;
 }
 
-// Start the server and log the running URI
+// Start the server and log the running server URL in the console 
 async function start() {
   const server = await init();
   await server.start();
